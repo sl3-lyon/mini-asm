@@ -8,7 +8,7 @@ namespace registers {
   u8 X  = 0x00;
   u8 Y  = 0x00;
   u8 P  = 0x00;
-  u8 PC = 0x00;
+  u16 PC = 0x00;
   u8 S  = 0x00;
 } // namespace registers
 
