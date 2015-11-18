@@ -14,7 +14,7 @@ namespace registers {
   extern u8 X;  // Index X
   extern u8 Y;  // Index Y
   extern u8 P;  // Program status
-  extern u8 PC; // Program Counter
+  extern u16 PC; // Program Counter
   extern u8 S;  // Stack pointer
 } // namespace registers
 
