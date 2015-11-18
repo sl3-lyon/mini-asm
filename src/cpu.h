@@ -1,7 +1,6 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
-#include <array>      // std::array
 #include <cstdint>    // uint8_t, uint16_t
 #include <functional> // std::function
 #include <map>        // std::map
