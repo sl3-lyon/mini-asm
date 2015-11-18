@@ -1,6 +1,8 @@
 #include "cpu.h"
 #include "errors.h"
 
+#include <array> // std::array
+
 namespace registers {
   u8 A  = 0x00;
   u8 X  = 0x00;
