@@ -62,6 +62,8 @@ private:
   std::string buffer_;
 };
 
+#include <regex>
+
 int main()
 {
   std::string path = "lel.txt";
@@ -87,5 +89,27 @@ int main()
     << "X: " << int(registers::X) << std::endl
     << "Y: " << int(registers::Y) << std::endl
     << "PC: " << int(registers::PC) << std::endl;
+
+  std::string mov1 = "mov a, 0b1110001";
+  std::string mov2 = "mov  a  ,  *42";
+  std::string mov3 = "mov a,0x42";
+  std::string push1 = "push a";
+  std::string push2 = "push    0xff";
+  std::string push3 = "push  0b1101";
+  std::string pop1 = "pop *0xff";
+  std::string pop2 = "pop    *0b0001";
+  std::string pop3 = "pop    a";
+  std::regex move_regex{"mov[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+  std::regex add_regex{ "add[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex sub_regex{ "sub[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex cmp_regex{ "cmp[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex or_regex{ "or[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex and_regex{ "and[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex xor_regex{ "xor[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex push_regex{ "push[ \t]+([a|x|y|p|s]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::regex pop_regex{ "pop[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
+  std::cout << std::boolalpha << std::regex_match(mov1, move_regex)
+    << std::regex_match(pop2, pop_regex)
+    << std::regex_match(pop3, pop_regex);
   std::cin.get();
 }
