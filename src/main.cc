@@ -16,7 +16,7 @@ constexpr u16 SwapBytes(u16 value) noexcept {
 
 class RomReader {
 public:
-  explicit RomReader(std::string const& path) : file_(path), index_(0) {
+  explicit RomReader(std::string const& path) : file_(path) {
     if (file_) {
       std::string line;
       while (std::getline(file_, line)) {
@@ -26,30 +26,32 @@ public:
     }
   }
 
-  std::vector<u8> bytes() {
+  std::vector<u8> bytes() const {
     std::vector<u8> bytes;
-    while (index_ < buffer_.size()) {
+    auto buffer = buffer_;
+    unsigned index{};
+    while (index < buffer.size()) {
       std::string sub;
-      if (isdigit(buffer_[index_])) {
-        sub += std::to_string(buffer_[index_] - '0');
+      if (isdigit(buffer[index])) {
+        sub += std::to_string(buffer[index] - '0');
       }
-      else if (tolower(buffer_[index_]) >= 'a' && tolower(buffer_[index_]) <= 'f') {
-        sub += buffer_[index_];
-      }
-      else {
-        throw std::runtime_error{ "Unknown value " + buffer_[index_] };
-      }
-      index_++;
-      if (isdigit(buffer_[index_])) {
-        sub += std::to_string(buffer_[index_] - '0');
-      }
-      else if (tolower(buffer_[index_]) >= 'a' && tolower(buffer_[index_]) <= 'f') {
-        sub += buffer_[index_];
+      else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
+        sub += buffer[index];
       }
       else {
-        throw std::runtime_error{ "Unknown value " + buffer_[index_] };
+        throw std::runtime_error{ "Unknown value " + buffer[index] };
       }
-      index_++;
+      index++;
+      if (isdigit(buffer[index])) {
+        sub += std::to_string(buffer[index] - '0');
+      }
+      else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
+        sub += buffer[index];
+      }
+      else {
+        throw std::runtime_error{ "Unknown value " + buffer[index] };
+      }
+      index++;
       unsigned int x;
       std::stringstream ss;
       ss << std::hex << sub;
@@ -60,7 +62,6 @@ public:
   }
 
 private:
-  unsigned index_;
   std::ifstream file_;
   std::string buffer_;
 };
@@ -69,10 +70,23 @@ int main()
 {
   std::string path = "lel.txt";
   RomReader reader{path};
-  auto bytes = reader.bytes();
+  ROM = reader.bytes();
+  for (auto const byte : ROM) {
+    if (op.find(byte) == op.end()) {
+      std::cout << "Unknown op " << byte;
+      break;
+    }
+    op[byte]();
+  }
+  /*auto bytes = reader.bytes();
   std::cout << int(bytes[0]) << std::endl
     << int(bytes[1]) << std::endl
     << int(bytes[2]) << std::endl
-    << int(bytes[3]) << std::endl;
+    << int(bytes[3]) << std::endl;*/
+  auto bytes = reader.bytes();
+  std::cout << "A: " << int(registers::A) << std::endl
+    << "X: " << int(registers::X) << std::endl
+    << "Y: " << int(registers::Y) << std::endl
+    << "PC: " << int(registers::PC) << std::endl;
   std::cin.get();
 }
