@@ -194,28 +194,28 @@ std::map<u8, std::function<void(void)>> op = {
   { 0x00, []() -> void {} },
 
   // --[ MOV ]--
-  { 0x01, []() -> void { registers::A = read_next(); } }, // mov A, VALUE
-  { 0x02, []() -> void { registers::A = read_addr(); } }, // mov A, ADDR
-  { 0x03, []() -> void { registers::X = read_next(); } }, // mov X, VALUE
-  { 0x04, []() -> void { registers::X = read_addr(); } }, // mov X, ADDR
-  { 0x05, []() -> void { registers::Y = read_next(); } }, // mov Y, VALUE
-  { 0x06, []() -> void { registers::Y = read_addr(); } }, // mov Y, ADDR
+  { 0x01, []() -> void { registers::A = read_next(); } },      // mov A, VALUE
+  { 0x02, []() -> void { registers::A = RAM[read_next()]; } }, // mov A, ADDR
+  { 0x03, []() -> void { registers::X = read_next(); } },      // mov X, VALUE
+  { 0x04, []() -> void { registers::X = RAM[read_next()]; } }, // mov X, ADDR
+  { 0x05, []() -> void { registers::Y = read_next(); } },      // mov Y, VALUE
+  { 0x06, []() -> void { registers::Y = RAM[read_next()]; } }, // mov Y, ADDR
 
   // --[ ADD ]--
-  { 0x07, []() -> void { registers::A += read_next(); } }, // add A, VALUE
-  { 0x08, []() -> void { registers::A += read_addr(); } }, // add A, ADDR
-  { 0x09, []() -> void { registers::X += read_next(); } }, // add X, VALUE
-  { 0x0a, []() -> void { registers::X += read_addr(); } }, // add X, ADDR
-  { 0x0b, []() -> void { registers::Y += read_next(); } }, // add Y, VALUE
-  { 0x0c, []() -> void { registers::Y += read_addr(); } }, // add Y, ADDR
+  { 0x07, []() -> void { registers::A += read_next(); } },      // add A, VALUE
+  { 0x08, []() -> void { registers::A += RAM[read_next()]; } }, // add A, ADDR
+  { 0x09, []() -> void { registers::X += read_next(); } },      // add X, VALUE
+  { 0x0a, []() -> void { registers::X += RAM[read_next()]; } }, // add X, ADDR
+  { 0x0b, []() -> void { registers::Y += read_next(); } },      // add Y, VALUE
+  { 0x0c, []() -> void { registers::Y += RAM[read_next()]; } }, // add Y, ADDR
 
   // --[ SUB ]--
-  { 0x0d, []() -> void { registers::A -= read_next(); } }, // sub A, VALUE
-  { 0x0e, []() -> void { registers::A -= read_addr(); } }, // sub A, ADDR
-  { 0x0f, []() -> void { registers::X -= read_next(); } }, // sub X, VALUE
-  { 0x10, []() -> void { registers::X -= read_addr(); } }, // sub X, ADDR
-  { 0x11, []() -> void { registers::Y -= read_next(); } }, // sub Y, VALUE
-  { 0x12, []() -> void { registers::Y -= read_addr(); } }, // sub Y, ADDR
+  { 0x0d, []() -> void { registers::A -= read_next(); } },      // sub A, VALUE
+  { 0x0e, []() -> void { registers::A -= RAM[read_next()]; } }, // sub A, ADDR
+  { 0x0f, []() -> void { registers::X -= read_next(); } },      // sub X, VALUE
+  { 0x10, []() -> void { registers::X -= RAM[read_next()]; } }, // sub X, ADDR
+  { 0x11, []() -> void { registers::Y -= read_next(); } },      // sub Y, VALUE
+  { 0x12, []() -> void { registers::Y -= RAM[read_next()]; } }, // sub Y, ADDR
 
   // --[ SHL ]--
   { 0x13, []() -> void { registers::A <<= read_next(); } }, // shl A, VALUE
@@ -280,11 +280,11 @@ std::map<u8, std::function<void(void)>> op = {
   { 0x42, []() -> void { call(registers::A); } }, // call
 
   // --[ PUSH ]--
-  { 0x43, []() -> void { stack.push(registers::A); } },  // push A
-  { 0x44, []() -> void { stack.push(registers::X); } },  // push X
-  { 0x45, []() -> void { stack.push(registers::Y); } },  // push Y
-  { 0x46, []() -> void { stack.push(registers::P); } },  // push P
-  { 0x47, []() -> void { stack.push(registers::S); } },  // push S
+  { 0x43, []() -> void { stack.push(registers::A); } }, // push A
+  { 0x44, []() -> void { stack.push(registers::X); } }, // push X
+  { 0x45, []() -> void { stack.push(registers::Y); } }, // push Y
+  { 0x46, []() -> void { stack.push(registers::P); } }, // push P
+  { 0x47, []() -> void { stack.push(registers::S); } }, // push S
 
   // --[ POP ]--
   { 0x48, []() -> void { registers::A = stack.pop(); } }, // pop A
@@ -292,59 +292,82 @@ std::map<u8, std::function<void(void)>> op = {
   { 0x4A, []() -> void { registers::Y = stack.pop(); } }, // pop Y
 
   // --[ OR ]--
-  { 0x4B, []() -> void { registers::A |= registers::A; } }, // or A, A
-  { 0x4C, []() -> void { registers::A |= registers::X; } }, // or A, X
-  { 0x4D, []() -> void { registers::A |= registers::Y; } }, // or A, Y
-  { 0x4E, []() -> void { registers::A |= read_next(); } },  // or A, VALUE
-  { 0x4F, []() -> void { registers::A |= read_addr(); } },  // or A, ADDR
+  { 0x4B, []() -> void { registers::A |= registers::A; } },     // or A, A
+  { 0x4C, []() -> void { registers::A |= registers::X; } },     // or A, X
+  { 0x4D, []() -> void { registers::A |= registers::Y; } },     // or A, Y
+  { 0x4E, []() -> void { registers::A |= read_next(); } },      // or A, VALUE
+  { 0x4F, []() -> void { registers::A |= RAM[read_next()]; } }, // or A, ADDR
 
-  { 0x50, []() -> void { registers::X |= registers::A; } }, // or X, A
-  { 0x51, []() -> void { registers::X |= registers::X; } }, // or X, X
-  { 0x52, []() -> void { registers::X |= registers::Y; } }, // or X, Y
-  { 0x53, []() -> void { registers::X |= read_next(); } },  // or X, VALUE
-  { 0x54, []() -> void { registers::X |= read_addr(); } },  // or X, ADDR
+  { 0x50, []() -> void { registers::X |= registers::A; } },     // or X, A
+  { 0x51, []() -> void { registers::X |= registers::X; } },     // or X, X
+  { 0x52, []() -> void { registers::X |= registers::Y; } },     // or X, Y
+  { 0x53, []() -> void { registers::X |= read_next(); } },      // or X, VALUE
+  { 0x54, []() -> void { registers::X |= RAM[read_next()]; } }, // or X, ADDR
 
-  { 0x55, []() -> void { registers::Y |= registers::A; } }, // or Y, A
-  { 0x56, []() -> void { registers::Y |= registers::X; } }, // or Y, X
-  { 0x57, []() -> void { registers::Y |= registers::Y; } }, // or Y, Y
-  { 0x58, []() -> void { registers::Y |= read_next(); } },  // or Y, VALUE
-  { 0x59, []() -> void { registers::Y |= read_addr(); } },  // or Y, ADDR
+  { 0x55, []() -> void { registers::Y |= registers::A; } },     // or Y, A
+  { 0x56, []() -> void { registers::Y |= registers::X; } },     // or Y, X
+  { 0x57, []() -> void { registers::Y |= registers::Y; } },     // or Y, Y
+  { 0x58, []() -> void { registers::Y |= read_next(); } },      // or Y, VALUE
+  { 0x59, []() -> void { registers::Y |= RAM[read_next()]; } }, // or Y, ADDR
 
   // --[ AND ]--
-  { 0x5A, []() -> void { registers::A &= registers::A; } }, // and A, A
-  { 0x5B, []() -> void { registers::A &= registers::X; } }, // and A, X
-  { 0x5C, []() -> void { registers::A &= registers::Y; } }, // and A, Y
-  { 0x5D, []() -> void { registers::A &= read_next(); } },  // and A, VALUE
-  { 0x5E, []() -> void { registers::A &= read_addr(); } },  // and A, ADDR
+  { 0x5A, []() -> void { registers::A &= registers::A; } },     // and A, A
+  { 0x5B, []() -> void { registers::A &= registers::X; } },     // and A, X
+  { 0x5C, []() -> void { registers::A &= registers::Y; } },     // and A, Y
+  { 0x5D, []() -> void { registers::A &= read_next(); } },      // and A, VALUE
+  { 0x5E, []() -> void { registers::A &= RAM[read_next()]; } }, // and A, ADDR
 
-  { 0x5F, []() -> void { registers::X &= registers::A; } }, // and X, A
-  { 0x61, []() -> void { registers::X &= registers::X; } }, // and X, X
-  { 0x62, []() -> void { registers::X &= registers::Y; } }, // and X, Y
-  { 0x63, []() -> void { registers::X &= read_next(); } },  // and X, VALUE
-  { 0x64, []() -> void { registers::X &= read_addr(); } },  // and X, ADDR
+  { 0x5F, []() -> void { registers::X &= registers::A; } },     // and X, A
+  { 0x61, []() -> void { registers::X &= registers::X; } },     // and X, X
+  { 0x62, []() -> void { registers::X &= registers::Y; } },     // and X, Y
+  { 0x63, []() -> void { registers::X &= read_next(); } },      // and X, VALUE
+  { 0x64, []() -> void { registers::X &= RAM[read_next()]; } }, // and X, ADDR
 
-  { 0x65, []() -> void { registers::Y &= registers::A; } }, // and Y, A
-  { 0x66, []() -> void { registers::Y &= registers::X; } }, // and Y, X
-  { 0x67, []() -> void { registers::Y &= registers::Y; } }, // and Y, Y
-  { 0x68, []() -> void { registers::Y &= read_next(); } },  // and Y, VALUE
-  { 0x69, []() -> void { registers::Y &= read_addr(); } },  // and Y, ADDR
+  { 0x65, []() -> void { registers::Y &= registers::A; } },     // and Y, A
+  { 0x66, []() -> void { registers::Y &= registers::X; } },     // and Y, X
+  { 0x67, []() -> void { registers::Y &= registers::Y; } },     // and Y, Y
+  { 0x68, []() -> void { registers::Y &= read_next(); } },      // and Y, VALUE
+  { 0x69, []() -> void { registers::Y &= RAM[read_next()]; } }, // and Y, ADDR
 
   // --[ XOR ]--
-  { 0x6A, []() -> void { registers::A ^= registers::A; } }, // xor A, A
-  { 0x6B, []() -> void { registers::A ^= registers::X; } }, // xor A, X
-  { 0x6C, []() -> void { registers::A ^= registers::Y; } }, // xor A, Y
-  { 0x6D, []() -> void { registers::A ^= read_next(); } },  // xor A, VALUE
-  { 0x6E, []() -> void { registers::A ^= read_addr(); } },  // xor A, ADDR
+  { 0x6A, []() -> void { registers::A ^= registers::A; } },     // xor A, A
+  { 0x6B, []() -> void { registers::A ^= registers::X; } },     // xor A, X
+  { 0x6C, []() -> void { registers::A ^= registers::Y; } },     // xor A, Y
+  { 0x6D, []() -> void { registers::A ^= read_next(); } },      // xor A, VALUE
+  { 0x6E, []() -> void { registers::A ^= RAM[read_next()]; } }, // xor A, ADDR
 
-  { 0x6F, []() -> void { registers::X ^= registers::A; } }, // xor X, A
-  { 0x70, []() -> void { registers::X ^= registers::X; } }, // xor X, X
-  { 0x71, []() -> void { registers::X ^= registers::Y; } }, // xor X, Y
-  { 0x72, []() -> void { registers::X ^= read_next(); } },  // xor X, VALUE
-  { 0x73, []() -> void { registers::X ^= read_addr(); } },  // xor X, ADDR
+  { 0x6F, []() -> void { registers::X ^= registers::A; } },     // xor X, A
+  { 0x70, []() -> void { registers::X ^= registers::X; } },     // xor X, X
+  { 0x71, []() -> void { registers::X ^= registers::Y; } },     // xor X, Y
+  { 0x72, []() -> void { registers::X ^= read_next(); } },      // xor X, VALUE
+  { 0x73, []() -> void { registers::X ^= RAM[read_next()]; } }, // xor X, ADDR
 
-  { 0x74, []() -> void { registers::Y ^= registers::A; } }, // xor Y, A
-  { 0x75, []() -> void { registers::Y ^= registers::X; } }, // xor Y, X
-  { 0x76, []() -> void { registers::Y ^= registers::Y; } }, // xor Y, Y
-  { 0x77, []() -> void { registers::Y ^= read_next(); } },  // xor Y, VALUE
-  { 0x78, []() -> void { registers::Y ^= read_addr(); } },  // xor Y, ADDR
+  { 0x74, []() -> void { registers::Y ^= registers::A; } },     // xor Y, A
+  { 0x75, []() -> void { registers::Y ^= registers::X; } },     // xor Y, X
+  { 0x76, []() -> void { registers::Y ^= registers::Y; } },     // xor Y, Y
+  { 0x77, []() -> void { registers::Y ^= read_next(); } },      // xor Y, VALUE
+  { 0x78, []() -> void { registers::Y ^= RAM[read_next()]; } }, // xor Y, ADDR
+
+  { 0x79, []() -> void { stack.push(read_next()); } },        // push VALUE
+  { 0x7A, []() -> void { stack.push(RAM[read_next()]); } },   // push ADDR
+  { 0x7B, []() -> void { RAM[read_next()] = stack.pop(); } }, // pop ADDR
+
+
+  { 0x7C, []() -> void { RAM[read_next()] = registers::A; } },     // mov ADDR, A
+  { 0x7D, []() -> void { RAM[read_next()] = registers::X; } },     // mov ADDR, X
+  { 0x7E, []() -> void { RAM[read_next()] = registers::Y; } },     // mov ADDR, Y
+  { 0x7F, []() -> void { RAM[read_next()] = read_next(); } },      // mov ADDR, VALUE
+  { 0x80, []() -> void { RAM[read_next()] = RAM[read_next()]; } }, // mov ADDR, ADDR
+
+  { 0x81, []() -> void { RAM[read_next()] += registers::A; } },     // add ADDR, A
+  { 0x82, []() -> void { RAM[read_next()] += registers::X; } },     // add ADDR, X
+  { 0x83, []() -> void { RAM[read_next()] += registers::Y; } },     // add ADDR, Y
+  { 0x84, []() -> void { RAM[read_next()] += read_next(); } },      // add ADDR, VALUE
+  { 0x85, []() -> void { RAM[read_next()] += RAM[read_next()]; } }, // add ADDR, ADDR
+
+  { 0x86, []() -> void { RAM[read_next()] -= registers::A; } },     // sub ADDR, A
+  { 0x87, []() -> void { RAM[read_next()] -= registers::A; } },     // sub ADDR, X
+  { 0x88, []() -> void { RAM[read_next()] -= registers::A; } },     // sub ADDR, Y
+  { 0x89, []() -> void { RAM[read_next()] -= read_next(); } },      // sub ADDR, VALUE
+  { 0x8A, []() -> void { RAM[read_next()] -= RAM[read_next()]; } }, // sub ADDR, VALUE
 };
