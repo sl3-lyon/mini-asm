@@ -94,7 +94,7 @@ inline u8 read_next() {
   if (registers::PC >= ROM.size()) {
     throw OutOfRangeException{"Out of ROM file"};
   }
-  return ROM[registers::PC++];
+  return ROM[++registers::PC];
 }
 
 /**
@@ -107,7 +107,7 @@ inline u8 read_addr() {
   if (registers::PC >= ROM.size()) {
     throw OutOfRangeException{"Out of ROM file"};
   }
-  return ROM[ROM[registers::PC++]];
+  return ROM[ROM[++registers::PC]];
 }
 
 /**
@@ -136,15 +136,15 @@ inline void cmp() {
   cmp(lop, rop);
 }
 
-inline void cmpRegOp(u8 reg) {
-  auto op = read_next();
-  cmp(reg, op);
-}
-
-inline void cmpOpReg(u8 reg) {
-  auto op = read_next();
-  cmp(op, reg);
-}
+//inline void cmpRegOp(u8 reg) {
+//  auto op = read_next();
+//  cmp(reg, op);
+//}
+//
+//inline void cmpOpReg(u8 reg) {
+//  auto op = read_next();
+//  cmp(op, reg);
+//}
 
 inline void jmp(u16 addr) noexcept {
   registers::PC = ROM[addr];
@@ -230,18 +230,18 @@ std::map<u8, std::function<void(void)>> op = {
   // --[ CMP ]--
   { 0x19, []() -> void { cmp(registers::A, registers::X); } }, // cmp A, X
   { 0x1A, []() -> void { cmp(registers::A, registers::Y); } }, // cmp A, Y
-  { 0x1B, []() -> void { cmpRegOp(registers::A); } }, // cmp A, op
-  { 0x1C, []() -> void { cmpOpReg(registers::A); } }, // cmp op, A
+  { 0x1B, []() -> void { cmp(registers::A, read_next()); } }, // cmp A, op
+  { 0x1C, []() -> void { cmp(read_next(), registers::A); } }, // cmp op, A
 
   { 0x1D, []() -> void { cmp(registers::X, registers::A); } }, // cmp X, A
   { 0x1E, []() -> void { cmp(registers::X, registers::Y); } }, // cmp X, Y
-  { 0x1F, []() -> void { cmpRegOp(registers::X); } }, // cmp X, op
-  { 0x20, []() -> void { cmpOpReg(registers::X); } }, // cmp op, X
+  { 0x1F, []() -> void { cmp(registers::X, read_next()); } }, // cmp X, op
+  { 0x20, []() -> void { cmp(read_next(), registers::X); } }, // cmp op, X
 
   { 0x21, []() -> void { cmp(registers::Y, registers::A); } }, // cmp Y, A
   { 0x22, []() -> void { cmp(registers::Y, registers::X); } }, // cmp Y, X
-  { 0x23, []() -> void { cmpRegOp(registers::Y); } }, // cmp Y, op
-  { 0x24, []() -> void { cmpOpReg(registers::Y); } }, // cmp op, Y
+  { 0x23, []() -> void { cmp(registers::Y, read_next()); } }, // cmp Y, op
+  { 0x24, []() -> void { cmp(read_next(), registers::Y); } }, // cmp op, Y
 
   // --[ JMP ]--
   { 0x25, []() -> void { jmp(read_next()); } }, // jmp ADDR
