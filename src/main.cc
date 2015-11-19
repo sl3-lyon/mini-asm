@@ -67,12 +67,15 @@ int main()
   std::string path = "lel.txt";
   RomReader reader{path};
   ROM = reader.bytes();
-  for (auto const byte : ROM) {
+  std::cout << "PC: " << int(registers::PC) << std::endl;
+  for (; registers::PC < ROM.size(); registers::PC++) {
+    auto const byte = ROM[registers::PC];
     if (op.find(byte) == op.end()) {
       std::cout << "Unknown op " << byte;
       break;
     }
-    op[byte]();
+    auto fun = op[byte];
+    fun();
   }
   /*auto bytes = reader.bytes();
   std::cout << int(bytes[0]) << std::endl
