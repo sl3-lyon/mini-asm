@@ -34,21 +34,17 @@ public:
       std::string sub;
       if (isdigit(buffer[index])) {
         sub += std::to_string(buffer[index] - '0');
-      }
-      else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
+      } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
         sub += buffer[index];
-      }
-      else {
+      } else {
         throw std::runtime_error{ "Unknown value " + buffer[index] };
       }
       index++;
       if (isdigit(buffer[index])) {
         sub += std::to_string(buffer[index] - '0');
-      }
-      else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
+      } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
         sub += buffer[index];
-      }
-      else {
+      } else {
         throw std::runtime_error{ "Unknown value " + buffer[index] };
       }
       index++;
