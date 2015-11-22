@@ -7,7 +7,9 @@
 template <unsigned size>
 class Stack {
 public:
-  Stack() = default;
+  Stack() {
+    static_assert(size > 0, "Stack size must be superior than 0");
+  }
   void push(u8 value) {
     assert(registers::S < size && "Stack overflow");
     if (registers::S >= size) {
@@ -78,11 +80,12 @@ std::vector<u8> ROM(1000);
 * @brief RAM
 */
 std::array<u8, 0xffff> RAM;
+unsigned ram_ptr = 0x100;
 
 /**
 * @brief Video RAM
 */
-std::array<u8, 0xffff> VRAM;
+std::array<u8, 0xffff> VRAM; // Not used yet
 
 /**
  * @brief Returns the next opcode
@@ -369,5 +372,5 @@ std::map<u8, std::function<void(void)>> op = {
   { 0x87, []() -> void { RAM[read_next()] -= registers::A; } },     // sub ADDR, X
   { 0x88, []() -> void { RAM[read_next()] -= registers::A; } },     // sub ADDR, Y
   { 0x89, []() -> void { RAM[read_next()] -= read_next(); } },      // sub ADDR, VALUE
-  { 0x8A, []() -> void { RAM[read_next()] -= RAM[read_next()]; } }, // sub ADDR, VALUE
+  { 0x8A, []() -> void { RAM[read_next()] -= RAM[read_next()]; } }, // sub ADDR, ADDR
 };
