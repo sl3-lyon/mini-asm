@@ -1,5 +1,5 @@
 # mini-asm
-Custom mini ASM language &amp; CPU emulator
+Custom mini ASM language &amp; CPU emulator. Will be used for a pseudo NES emulator (that's why there's a Video RAM)
 
 ***Work in progress!***
 
