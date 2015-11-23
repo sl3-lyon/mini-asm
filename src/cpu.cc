@@ -72,7 +72,7 @@ enum Flags {
 }; // namespace flags
 
 /**
-* @brief Buffer in which will be loader the ROM
+* @brief Buffer in which will be loaded the ROM file (containing opcodes)
 */
 std::vector<u8> ROM(1000);
 
