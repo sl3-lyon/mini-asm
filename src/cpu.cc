@@ -13,7 +13,7 @@ public:
   void push(u8 value) {
     assert(registers::S < size && "Stack overflow");
     if (registers::S >= size) {
-      throw OutOfRangeException{ "Stack overflow" };
+      throw OutOfRangeException{"Stack overflow"};
     }
     buffer_[registers::S] = value;
     registers::S++;
@@ -21,7 +21,7 @@ public:
   u8 pop() {
     assert(registers::S != 0 && "Stack is empty");
     if (registers::S == 0) {
-      throw OutOfRangeException{ "Stack is empty" };
+      throw OutOfRangeException{"Stack is empty"};
     }
     registers::S--;
     return buffer_[registers::S];
