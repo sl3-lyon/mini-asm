@@ -133,21 +133,11 @@ inline void cmp(u8 ra, u8 rb) noexcept {
   }
 }
 
-inline void cmp() {
+inline void cmp() noexcept {
   auto lop = read_next();
   auto rop = read_next();
   cmp(lop, rop);
 }
-
-//inline void cmpRegOp(u8 reg) {
-//  auto op = read_next();
-//  cmp(reg, op);
-//}
-//
-//inline void cmpOpReg(u8 reg) {
-//  auto op = read_next();
-//  cmp(op, reg);
-//}
 
 inline void jmp(u16 addr) noexcept {
   registers::PC = ROM[addr];
@@ -177,25 +167,41 @@ inline void jle(u16 addr) noexcept {
   }
 }
 
+/**
+ * @brief JG instruction (Jump if Greater)
+ * @param[in] addr Address to jump on
+ * @exception noexcept
+ */
 inline void jg(u16 addr) noexcept {
   if (registers::P & Flags::greater) {
     registers::PC = addr;
   }
 }
 
+/**
+ * @brief JGE instruction (Jump if Greater or Equal)
+ * @param[in] addr Address to jump on
+ * @exception noexcept
+ */
 inline void jge(u16 addr) noexcept {
+	// TODO - Check address validity
   if (registers::P & Flags::greater || registers::P & Flags::equal) {
     registers::PC = addr;
   }
 }
 
+/**
+ * @brief System call
+ * @param[in] value System call ID
+ * @exception noexcept
+ */
 inline void call(u8 value) {
   // TODO - Call
 	(void) value;
 }
 
 const std::map<u8, std::function<void(void)>> op = {
-  { 0x00, []() -> void {} },
+  { 0x00, []() -> void {} }, // NOP
 
   // --[ MOV ]--
   { 0x01, []() -> void { registers::A = read_next(); } },      // mov A, VALUE
