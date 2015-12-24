@@ -115,8 +115,6 @@ inline u8 read_addr() {
 
 /**
  * @brief Compares the arguments. Can set EQUAL, LOWER flag or GREATER flag
- * @throw OutOfRangeException if we are out of ROM file
- * @pre We must not be out of ROM file
  */
 inline void cmp(u8 ra, u8 rb) noexcept {
   if (ra == rb) {
@@ -136,8 +134,7 @@ inline void cmp(u8 ra, u8 rb) noexcept {
 
 /**
  * @brief CMP instruction: reads the 2 next values and compares them
- * @exception 
- *
+ * @exception OutOrRangeException if we are out the ROM file 
  */
 inline void cmp() {
   auto lop = read_next();
