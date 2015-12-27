@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -17,9 +18,7 @@ constexpr u16 SwapBytes(u16 value) noexcept { // Not used yet
 
 inline std::string to_lower(std::string const& str) {
   auto cpy = str;
-  for (auto& c : cpy) {
-    c = tolower(c);
-  }
+	std::transform(cpy.begin(), cpy.end(), cpy.begin(), tolower);
   return cpy;
 }
 

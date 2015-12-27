@@ -134,7 +134,7 @@ inline void cmp(u8 ra, u8 rb) noexcept {
 
 /**
  * @brief CMP instruction: reads the 2 next values and compares them
- * @exception OutOrRangeException if we are out the ROM file 
+ * @exception OutOfRangeException if we are out the ROM file 
  */
 inline void cmp() {
   auto lop = read_next();
