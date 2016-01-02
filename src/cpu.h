@@ -19,7 +19,6 @@ namespace registers {
 } // namespace registers
 
 extern std::vector<u8> ROM;
-
-extern const std::map<u8, std::function<void(void)>> op;
+extern std::map<u8, std::function<void(void)>> op;
 
 #endif // __CPU_H__
