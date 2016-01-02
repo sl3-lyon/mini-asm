@@ -48,6 +48,7 @@ const std::vector<std::string> instructions = {
 
 std::string extract_op(std::string const& line);
 std::string extract_param1(std::string const& line);
+std::string extract_param2(std::string const& line);
 
 } // namespace Asm::Syntax
 } // namespace Asm

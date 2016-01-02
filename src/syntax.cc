@@ -26,28 +26,57 @@ namespace {
    * @throw /
    */
 	bool is_inst(std::string const& line) noexcept {
-		bool is_inst = false;
 		for (auto const& regex : Asm::Syntax::regexes) {
 			if (std::regex_match(to_lower(line), regex)) {
-				is_inst = true;
-				break;
+				return true;
 			}
 		}
-		return is_inst;
+		return false;
+	}
+
+	/**
+   * @brief Checks if the ASM instruction has at leat 1 parameter
+   * @param line The line we work with
+   * @returns True if the ASM instruction has at leat 1 parameter, false otherwise
+   */
+	bool has_1_parameter(std::string const& line) {
+		using namespace Asm::Syntax;
+		std::vector<std::regex> regexes = {
+			regex_mov, regex_add,
+			regex_sub, regex_cmp,
+			regex_or, regex_and,
+			regex_xor, regex_push,
+			regex_pop, regex_jmp
+		};
+		for (auto const& regex : regexes) {
+			if (std::regex_match(to_lower(line), regex)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
    * @brief Checks if line is a correct ASM instruction
    * @param line The line we work with
    * @returns True if line is a correct ASM instruction, false otherwise
-   * @throw /
    */
-	bool as_1_parameter(std::string const& line) noexcept {
+	bool has_2_parameters(std::string const& line) {
+		using namespace Asm::Syntax;
+		std::vector<std::regex> regexes = {
+			regex_mov, regex_add,
+			regex_sub, regex_cmp,
+			regex_or, regex_and,
+			regex_xor
+		};
+		for (auto const& regex : regexes) {
+			if (std::regex_match(to_lower(line), regex)) {
+				return true;
+			}
+		}
 		return false;
 	}
 }
-
-
 
 /**
  * @brief Returns the ASM operand of the line
@@ -76,13 +105,37 @@ std::string Asm::Syntax::extract_op(std::string const& line) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 std::string Asm::Syntax::extract_param1(std::string const& line) {
+	assert(has_1_parameter(to_lower(line)));
 	unsigned i{};
 	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
 	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
 	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
 	std::string param1;
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++) {
+	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
 		param1 += line[i];
 	}
 	return param1;
+}
+
+/**
+ * @brief Returns the ASM first param of the line
+ * @pre line must be a correct ASM instruction
+ * @pre The instruction must have 2 parameters
+ * @param line The line we work with
+ * @returns The parameter
+ * @throw std::bad_alloc if std::string::op+= fails
+ */
+std::string Asm::Syntax::extract_param2(std::string const& line) {
+	assert(has_1_parameter(to_lower(line)));
+	unsigned i{};
+	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
+	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+	for (; i < line.size() && !std::isspace(line[i]); i++); // Skip param 1
+	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+	std::string param;
+	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ';'; i++) {
+		param += line[i];
+	}
+	return param;
 }
