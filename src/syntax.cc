@@ -59,9 +59,10 @@ inline bool match_any(std::string const& str, std::vector<std::regex> regexes) {
  */
 bool Asm::Syntax::has_1_parameter(std::string const& line) {
 	return match_any(line, { regex_mov,
-		regex_add, regex_sub, regex_cmp,
-		regex_or, regex_and, regex_xor,
-		regex_push, regex_pop, regex_jmp
+		regex_add, regex_sub, regex_cmp, regex_or,
+		regex_and, regex_xor, regex_push, regex_pop,
+		regex_jmp, regex_je, regex_jg, regex_jge,
+		regex_jl, regex_jle, regex_jmp, regex_jne
 	});
 }
 
@@ -131,7 +132,7 @@ std::string Asm::Syntax::extract_param2(std::string const& line) {
 	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
 	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
 	for (; i < line.size() && !std::isspace(line[i]); i++); // Skip param 1
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+	for (; i < line.size() && (std::isspace(line[i]) || line[i] == ','); i++); // Skip all spaces
 	std::string param;
 	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ';'; i++) {
 		param += line[i];

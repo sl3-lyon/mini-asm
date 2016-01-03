@@ -6,16 +6,24 @@
 namespace Asm {
 namespace Syntax {
 
-std::regex const regex_mov{"[ \t]*mov[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_add{"[ \t]*add[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_sub{"[ \t]*sub[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_cmp{"[ \t]*cmp[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_or{"[ \t]*or[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_and{"[ \t]*and[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-std::regex const regex_xor{"[ \t]*xor[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_mov{"[ \t]*mov[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_add{"[ \t]*add[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_sub{"[ \t]*sub[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_cmp{"[ \t]*cmp[ \t]+[a|x|y|s|p|pc][ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_or{"[ \t]*or[ \t]+[a|x|y|s|p|pc][ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_and{"[ \t]*and[ \t]+[a|x|y|s|p|pc][ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_xor{"[ \t]*xor[ \t]+[a|x|y|s|p|pc][ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
 std::regex const regex_push{"[ \t]*push[ \t]+([a|x|y|p|s]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+|'[a-zA-Z0-9]')[ \t]*"};
-std::regex const regex_pop{"[ \t]*pop([ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+))?[ \t]*"};
-std::regex const regex_jmp{"[ \t]*(jmp|je|jne|jl|jle|jg|jge)[ \t]+([a|x|y]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_pop{"[ \t]*pop([ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+))?[ \t]*"};
+
+std::regex const regex_jmp{"[ \t]*(jm)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_je{"[ \t]*(je)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_jne{"[ \t]*(jne)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_jl{"[ \t]*(jl)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_jle{"[ \t]*(jle)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_jg{"[ \t]*(jg)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+std::regex const regex_jge{"[ \t]*(jge)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
+
 
 const std::vector<std::regex> regexes = {
 	regex_mov,

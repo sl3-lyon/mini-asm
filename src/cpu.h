@@ -59,8 +59,5 @@ private:
 extern Stack<0xff> stack;
 extern std::array<u8, 0xffff> RAM;
 extern std::vector<u8> ROM;
-extern std::map<u8, std::function<void(void)>> op;
-
-void exec(std::string const& op, std::string const& param1, std::string const& param2);
 
 #endif // __CPU_H__

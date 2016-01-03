@@ -3,8 +3,7 @@
 #include <sstream>
 
 #include "cpu.h"
-#include "stack.h"
-#include "syntax.h"
+#include "infos.h"
 #include "interpreter.h"
 
 /**
@@ -12,10 +11,11 @@
 * @returns A new u16 with the first's bytes swapped
 * @exception /
 */
-constexpr u16 SwapBytes(u16 value) noexcept {
+constexpr u16 SwapBytes(u16 value) noexcept { // Not used yet
 	return ((value & 0xff) << 8) + (value >> 8);
 }
 
+// Not used yet
 class RomReader {
 public:
 	explicit RomReader(std::string const& path) : file_(path) {
@@ -64,120 +64,69 @@ private:
 	std::string buffer_;
 };
 
-#include <regex>
+void start_shell_mode();
 
-const std::vector<std::regex> regexes = {
-	std::regex{ "mov[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "add[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "sub[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "cmp[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "or[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "and[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "xor[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" },
-	std::regex{ "push[ \t]+([a|x|y|p|s]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+|'[a-zA-Z0-9]')[ \t]*" },
-	std::regex{ "pop([ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+))?[ \t]*" },
-	std::regex{ "(jmp|je|jne|jl|jle|jg|jge)[ \t]+([a|x|y]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*" }
-};
-
-const std::vector<std::string> instructions = {
-	"mov A, 0xff",
-	"mov X, 0xff",
-	"cmp A, 0xff",
-	"jne Y",
-	"jle Y",
-	"jl Y",
-	"jge A",
-	"je 0b1101",
-	"mov *0xff, a",
-	"mov A, *0x01",
-	"mov X, 0x00",
-	"push 42",
-	"pop"
-};
-
-inline std::string to_lower(std::string const& str) {
-	auto cpy = str;
-	for (auto& c : cpy) {
-		c = tolower(c);
+int main(int argc, char **argv) {
+	if (argc == 1) {
+		start_shell_mode();
+	} else if (argc == 2) {
+		// TODO - Read file
+	} else {
+		std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
 	}
-	return cpy;
 }
 
-#include <sstream>
+const std::vector<std::regex> command_regexes = {
+	std::regex{"p r( (a|x|y|p|s|pc))?"}
+};
 
-int main()
-{
-	/*std::string path = "lel.txt";
-	RomReader reader{path};
-	ROM = reader.bytes();
-	std::cout << "PC: " << int(registers::PC) << std::endl;
-	for (; registers::PC < ROM.size(); registers::PC++) {
-		auto const byte = ROM[registers::PC];
-		if (op.find(byte) == op.end()) {
-			std::cout << "Unknown op " << byte;
-			break;
+bool is_command(std::string const& line) {
+	for (auto const& regex : command_regexes) {
+		if (std::regex_match(line, regex)) {
+			return true;
 		}
-		auto fun = op[byte];
-		fun();
-	}*/
-	/*auto bytes = reader.bytes();
-	std::cout << int(bytes[0]) << std::endl
-		<< int(bytes[1]) << std::endl
-		<< int(bytes[2]) << std::endl
-		<< int(bytes[3]) << std::endl;*/
-	//auto bytes = reader.bytes();
-	/*std::cout << "A: " << int(registers::A) << std::endl
-		<< "X: " << int(registers::X) << std::endl
-		<< "Y: " << int(registers::Y) << std::endl
-		<< "PC: " << int(registers::PC) << std::endl;*/
-
-	//std::string mov1 = "mov a, 0b1110001";
-	//std::string mov2 = "mov	a	,	*42";
-	//std::string mov3 = "mov a,0x42";
-	//std::string push1 = "push 'a'";
-	//std::string push2 = "push		0xff";
-	//std::string push3 = "push	0b1101";
-	//std::string pop1 = "pop *0xff";
-	//std::string pop2 = "pop		*0b0001";
-	//std::string pop3 = "pop		a";
-	//std::regex move_regex{"mov[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
-	//std::regex add_regex{ "add[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex sub_regex{ "sub[ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex cmp_regex{ "cmp[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex or_regex{ "or[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex and_regex{ "and[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex xor_regex{ "xor[ \t]+[a|x|y][ \t]*,[ \t]*([a|x|y]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*" };
-	//std::regex push_regex{ "push[ \t]+([a|x|y|p|s]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+|'[a-zA-Z0-9]')[ \t]*" };
-	//std::regex pop_regex{ "pop([ \t]+([a|x|y]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+))?[ \t]*" };
-	///*std::cout << std::boolalpha << std::regex_match(push1, push_regex)
-	//	<< std::regex_match(pop2, pop_regex)
-	//	<< std::regex_match(pop3, pop_regex);*/
-	//for (auto str : instructions)
-	//{
-	//	std::cout << str << " ";
-	//	bool match = false;
-	//	for (auto regex : regexes) {
-	//		if (std::regex_match(to_lower(str), regex)) {
-	//			std::cout << "Ok" << std::endl;
-	//			match = true;
-	//		}
-	//	}
-	//	if (!match) {
-	//		std::cout << "Not ok" << std::endl;
-	//	}
-	//}
-	/// Test with asm line
-	std::string line = " mov		A,	250   ;lol";
-	line = line.substr(0, line.find(';'));
-	Asm::Interpreter::intepret_instruction("MOV x, 42");
-	Asm::Interpreter::intepret_instruction("push x");
-	Asm::Interpreter::intepret_instruction("push 255");
-	Asm::Interpreter::intepret_instruction("pop a");
-	Asm::Interpreter::intepret_instruction("pop x");
-	/*line = line.substr(0, line.find("/"));
-	std::cout << "Inst: '" << Asm::Syntax::extract_param2(line) << "'" << std::endl;*/
-	std::cout << "Register A = " << (int)registers::A << std::endl
-		<< "Register X = " << (int)registers::X << std::endl;
-	std::cin.get();
+	}
+	return false;
 }
 
+void print_registers() {
+	std::cout << "Register A: " << static_cast<unsigned>(registers::A) << std::endl;
+	std::cout << "Register X: " << static_cast<unsigned>(registers::X) << std::endl;
+	std::cout << "Register Y: " << static_cast<unsigned>(registers::Y) << std::endl;
+	std::cout << "Register P: " << static_cast<unsigned>(registers::P) << std::endl;
+	std::cout << "Register PC: " << static_cast<unsigned>(registers::PC) << std::endl;
+	std::cout << "Register S: " << static_cast<unsigned>(registers::S) << std::endl;
+}
+
+void interpret_command(std::string const& command) {
+	if (command == "p r") print_registers();
+	else if (std::regex_match(command, std::regex{"p r (a|x|y|p|s|pc)"})) {
+		std::cout << static_cast<unsigned>(get_register(command.substr(4))) << "\n";
+	}
+}
+
+inline bool is_space(std::string const& str) noexcept {
+	for (auto c : str) {
+		if (!isspace(c)) return false;
+	}
+	return true;
+}
+
+void start_shell_mode() {
+	std::cout << "Mini ASM version " + App::version << "\n"
+		<< "Created by Vincent P." << "\n"
+		<< "Shell mode - Type  'exit' to stop \n";
+
+	std::string line;
+	do {
+		try {
+			std::cout << "> ";
+			std::getline(std::cin, line);
+			if (is_space(line)) continue;
+			if (is_command(line)) interpret_command(line);
+			else Asm::Interpreter::intepret_instruction(line);
+		} catch (std::exception const& e) {
+			std::cout << std::string{"Error: "} + e.what();
+		}
+	} while (line != "exit");
+}
