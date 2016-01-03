@@ -38,21 +38,11 @@ inline bool is_address(std::string const& op) noexcept {
 
 inline u8& get_register(std::string const& reg) noexcept {
 	auto upper_reg = to_upper(reg);
-	if (upper_reg == "A") {
-		return registers::A;
-	}
-	if (upper_reg == "X") {
-		return registers::X;
-	}
-	if (upper_reg == "Y") {
-		return registers::Y;
-	}
-	if (upper_reg == "P") {
-		return registers::P;
-	}
-	if (upper_reg == "S") {
-		return registers::S;
-	}
+	if (upper_reg == "A") return registers::A;
+	if (upper_reg == "X") return registers::X;
+	if (upper_reg == "Y") return registers::Y;
+	if (upper_reg == "P") return registers::P;
+	if (upper_reg == "S") return registers::S;
 	throw std::runtime_error{"Unknown register '" + upper_reg + "'"};
 }
 
@@ -69,42 +59,23 @@ inline u8 from_bin(std::string const& bin) {
 }
 
 inline u8 get_value_of(std::string const& val) {
+	// Register
 	if (is_register(val)) {
 		return get_register(val);
-	} else if (is_address(val)) {
-		// Decimal
-		if (std::regex_match(val, std::regex{"\\*[0-9]+"})) {
-			unsigned nb;
-			std::istringstream{val.substr(1)} >> nb;
-			return static_cast<u8>(nb);
-		}
-		// Hex
-		else if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) {
-			return from_hex(val.substr(3));
-		}
-		// Bin
-		else if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) {
-			return from_bin(val.substr(3));
-		}
-	} else {
-		// Decimal
-		if (std::regex_match(val, std::regex{"[0-9]+"})) {
-			unsigned nb;
-			std::istringstream{val} >> nb;
-			return static_cast<u8>(nb);
-		}
-		// Hex
-		if (std::regex_match(val, std::regex{"0x[0-9a-f]+"})) {
-			return from_hex(val.substr(2));
-		}
-		// Bin
-		if (std::regex_match(val, std::regex{"0b[0-1]+"})) {
-			return from_bin(val.substr(2));
-		}
-		else {
-			throw std::runtime_error{"Unknown value " + val};
-		}
 	}
+	// Address
+	if (is_address(val)) {
+		if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return static_cast<u8>(std::stoi(val.substr(1))); // Decimal
+		if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"}))  return from_hex(val.substr(3)); // Hex
+		if (std::regex_match(val, std::regex{"\\*0b[0-1]+"}))  return from_bin(val.substr(3)); // Bin
+	}
+	// Simple value
+	else {
+		if (std::regex_match(val, std::regex{"[0-9]+"})) return static_cast<u8>(std::stoi(val)); // Decimal
+		if (std::regex_match(val, std::regex{"0x[0-9a-f]+"})) return from_hex(val.substr(2)); // Hex
+		if (std::regex_match(val, std::regex{"0b[0-1]+"})) return from_bin(val.substr(2)); // Bin
+	}
+	throw std::runtime_error{"Unknown value '" + val + "'"};
 }
 
 
