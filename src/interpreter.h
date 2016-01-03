@@ -7,8 +7,7 @@
 namespace Asm {
 namespace Interpreter {
 
-void intepret_instruction(std::string const& inst, int line = -1);
-void exec(std::string const& op, std::string const& param1, std::string const& param2);
+void intepret_instruction(std::string const& inst);
 
 } // namespace Asm
 } // namespace Asm::Interpreter

@@ -1,5 +1,9 @@
 #include "cpu.h"
 
+#include <bitset>  // std::bitset
+#include <sstream> // std::stringstream
+#include <regex>   // std::regex, std::regex_match
+
 Stack<0xff> stack{};
 
 /**
@@ -135,6 +139,184 @@ inline void jge(u16 addr) noexcept {
 
 inline void call(u8 value) {
 	// TODO - Call
+}
+
+/**
+ * @brief Checks if val is the name of a register
+ * @param val The string we test
+ * @returns True if val is the name of a register, false otherwise
+ * @throw /
+ */
+inline bool is_register(std::string const& name) noexcept {
+	return name == "A" || name == "X" || name == "Y"
+		|| name == "P" || name == "S";
+}
+
+/**
+ * @brief Checks if val is an address
+ * @param val The string we test
+ * @returns True if val is an address, false otherwise
+ * @throw /
+ */
+inline bool is_address(std::string const& val) noexcept {
+	return std::regex_match(val, std::regex{"\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+"});
+}
+
+/**
+ * @brief Returns a reference to one of the registers
+ * @param name Name of a register
+ * @pre name must be a name of a register
+ * @throw std::runtime_error if name is not correct
+ */
+inline u8& get_register(std::string const& name) noexcept {
+	if (name == "A") return registers::A;
+	if (name == "X") return registers::X;
+	if (name == "Y") return registers::Y;
+	if (name == "S" || name == "P" || name == "PC") {
+		throw std::runtime_error{"Cannot access to register '" + name + "'"};
+	}
+	throw std::runtime_error{"Invalid token '" + name + "'"};
+}
+
+inline u8 from_hex(std::string const& hex) {
+	unsigned x;
+	std::stringstream ss;
+	ss << std::hex << hex.substr(2);
+	ss >> x;
+	return static_cast<u8>(x);
+}
+
+inline u8 from_bin(std::string const& bin) {
+	return static_cast<u8>(std::bitset<8>(bin.substr(2)).to_ulong());
+}
+
+inline u8 get_value_of(std::string const& val) {
+	// Register
+	if (is_register(val)) {
+		return get_register(val);
+	}
+	// Address
+	if (is_address(val)) {
+		if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return static_cast<u8>(std::stoi(val.substr(1))); // Decimal
+		if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"}))  return from_hex(val.substr(3)); // Hex
+		if (std::regex_match(val, std::regex{"\\*0b[0-1]+"}))  return from_bin(val.substr(3)); // Bin
+	}
+	// Simple value
+	else {
+		if (std::regex_match(val, std::regex{"[0-9]+"})) return static_cast<u8>(std::stoi(val)); // Decimal
+		if (std::regex_match(val, std::regex{"0x[0-9a-f]+"})) return from_hex(val.substr(2)); // Hex
+		if (std::regex_match(val, std::regex{"0b[0-1]+"})) return from_bin(val.substr(2)); // Bin
+	}
+	throw std::runtime_error{"Invalid token '" + val + "'"};
+}
+
+
+// TODO - Refactoring
+void exec_mov(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) = get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] = get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute MOV"};
+	}
+}
+
+void exec_add(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) += get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] += get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute ADD"};
+	}
+}
+
+void exec_sub(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) -= get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] -= get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute SUB"};
+	}
+}
+
+void exec_cmp(std::string const& param1, std::string const& param2) {
+	auto val1 = get_value_of(param1);
+	auto val2 = get_value_of(param2);
+	if (val1 == val2) {
+		registers::P |= Flags::equal;
+	} else if (val1 > val2) {
+		registers::P |= Flags::greater;
+	} else if (val1 < val2) {
+		registers::P |= Flags::lower;
+	}
+}
+
+void exec_or(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) |= get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] |= get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute OR"};
+	}
+}
+
+void exec_and(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) &= get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] &= get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute AND"};
+	}
+}
+
+void exec_xor(std::string const& param1, std::string const& param2) {
+	if (is_register(param1)) {
+		get_register(param1) ^= get_value_of(param2);
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] ^= get_value_of(param2);
+	} else {
+		throw std::runtime_error{"Cannot execute XOR"};
+	}
+}
+
+void exec_push(std::string const& param1) {
+	stack.push(get_value_of(param1));
+}
+
+void exec_pop(std::string const& param1) {
+	if (is_register(param1)) {
+		get_register(param1) = stack.pop();
+	} else if (is_address(param1)) {
+		RAM[get_value_of(param1)] = stack.pop();
+	}
+}
+// End TODO
+
+void exec(std::string const& op, std::string const& param1, std::string const& param2) {
+	if (op == "MOV") {
+		exec_mov(param1, param2);
+	} else if (op == "ADD") {
+		exec_add(param1, param2);
+	} else if (op == "SUB") {
+		exec_sub(param1, param2);
+	} else if (op == "CMP") {
+		exec_sub(param1, param2);
+	} else if (op == "OR") {
+		exec_sub(param1, param2);
+	} else if (op == "AND") {
+		exec_sub(param1, param2);
+	} else if (op == "XOR") {
+		exec_sub(param1, param2);
+	} else if (op == "PUSH") {
+		exec_push(param1);
+	} else if (op == "POP") {
+		exec_pop(param1);
+	}
 }
 
 std::map<u8, std::function<void(void)>> op = {

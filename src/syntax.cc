@@ -36,24 +36,33 @@ bool Asm::Syntax::is_inst(std::string const& line) noexcept {
 }
 
 /**
+ * @brief Checks if str matches any of the regexes
+ * @param str The string we test
+ * @param regexes A vector of regex
+ * @pre Each regex must be correct
+ * @returns true if str match any of the regexes, false otherwise
+ * @throw std::regex_error If any regexe is not correct
+ */
+inline bool match_any(std::string const& str, std::vector<std::regex> regexes) {
+	for (auto const& regex : regexes) {
+		if (std::regex_match(to_lower(str), regex)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * @brief Checks if the ASM instruction has at leat 1 parameter
  * @param line The line we work with
  * @returns True if the ASM instruction has at leat 1 parameter, false otherwise
  */
 bool Asm::Syntax::has_1_parameter(std::string const& line) {
-	const std::vector<std::regex> regexes = {
-		regex_mov, regex_add,
-		regex_sub, regex_cmp,
-		regex_or, regex_and,
-		regex_xor, regex_push,
-		regex_pop, regex_jmp
-	};
-	for (auto const& regex : regexes) {
-		if (std::regex_match(to_lower(line), regex)) {
-			return true;
-		}
-	}
-	return false;
+	return match_any(line, { regex_mov,
+		regex_add, regex_sub, regex_cmp,
+		regex_or, regex_and, regex_xor,
+		regex_push, regex_pop, regex_jmp
+	});
 }
 
 /**
@@ -62,18 +71,10 @@ bool Asm::Syntax::has_1_parameter(std::string const& line) {
  * @returns True if line is a correct ASM instruction, false otherwise
  */
 bool Asm::Syntax::has_2_parameters(std::string const& line) {
-	const std::vector<std::regex> regexes = {
-		regex_mov, regex_add,
-		regex_sub, regex_cmp,
-		regex_or, regex_and,
-		regex_xor
-	};
-	for (auto const& regex : regexes) {
-		if (std::regex_match(to_lower(line), regex)) {
-			return true;
-		}
-	}
-	return false;
+	return match_any(line, { regex_mov,
+		regex_add, regex_sub, regex_cmp,
+		regex_or, regex_and, regex_xor
+	});
 }
 
 /**

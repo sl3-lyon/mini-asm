@@ -172,7 +172,7 @@ int main()
 	Asm::Interpreter::intepret_instruction("MOV x, 42");
 	Asm::Interpreter::intepret_instruction("push x");
 	Asm::Interpreter::intepret_instruction("push 255");
-	Asm::Interpreter::intepret_instruction("pop x");
+	Asm::Interpreter::intepret_instruction("pop a");
 	Asm::Interpreter::intepret_instruction("pop x");
 	/*line = line.substr(0, line.find("/"));
 	std::cout << "Inst: '" << Asm::Syntax::extract_param2(line) << "'" << std::endl;*/
@@ -180,3 +180,4 @@ int main()
 		<< "Register X = " << (int)registers::X << std::endl;
 	std::cin.get();
 }
+
