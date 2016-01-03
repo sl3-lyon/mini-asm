@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "stack.h"
 #include "syntax.h"
+#include "interpreter.h"
 
 /**
 * @brief Swap the bytes of 2-bytes unsigned number
@@ -102,6 +103,8 @@ inline std::string to_lower(std::string const& str) {
 	return cpy;
 }
 
+#include <sstream>
+
 int main()
 {
 	/*std::string path = "lel.txt";
@@ -163,8 +166,17 @@ int main()
 	//		std::cout << "Not ok" << std::endl;
 	//	}
 	//}
-	std::string line = "mov A, 2";
-	line = line.substr(0, line.find("/"));
-	std::cout << "Inst: '" << Asm::Syntax::extract_param1(line) << "'";
+	/// Test with asm line
+	std::string line = " mov		A,	250   ;lol";
+	line = line.substr(0, line.find(';'));
+	Asm::Interpreter::intepret_instruction("MOV x, 42");
+	Asm::Interpreter::intepret_instruction("push x");
+	Asm::Interpreter::intepret_instruction("push 255");
+	Asm::Interpreter::intepret_instruction("pop x");
+	Asm::Interpreter::intepret_instruction("pop x");
+	/*line = line.substr(0, line.find("/"));
+	std::cout << "Inst: '" << Asm::Syntax::extract_param2(line) << "'" << std::endl;*/
+	std::cout << "Register A = " << (int)registers::A << std::endl
+		<< "Register X = " << (int)registers::X << std::endl;
 	std::cin.get();
 }

@@ -4,6 +4,9 @@
 #include <exception> // std::exception
 #include <string>    // std::string
 
+namespace Asm {
+namespace Errors {
+
 class OutOfRangeException : public std::exception {
 public:
 	explicit OutOfRangeException(std::string const& what) : what_(what) {}
@@ -13,5 +16,8 @@ public:
 private:
 	std::string what_;
 };
+
+} // namespace Asm::Errors
+} // namespace Asm
 
 #endif // __ERRORS_H__

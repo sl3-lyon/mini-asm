@@ -1,35 +1,4 @@
 #include "cpu.h"
-#include "errors.h"
-
-#include <array>   // std::array
-#include <cassert> // assert
-
-template <unsigned size>
-class Stack {
-public:
-	Stack() {
-		static_assert(size > 0, "Stack size must be superior than 0");
-	}
-	void push(u8 value) {
-		assert(registers::S < size && "Stack overflow");
-		if (registers::S >= size) {
-			throw OutOfRangeException{ "Stack overflow" };
-		}
-		buffer_[registers::S] = value;
-		registers::S++;
-	}
-	u8 pop() {
-		assert(registers::S != 0 && "Stack is empty");
-		if (registers::S == 0) {
-			throw OutOfRangeException{ "Stack is empty" };
-		}
-		registers::S--;
-		return buffer_[registers::S];
-	}
-
-private:
-	std::array<u8, size> buffer_;
-};
 
 Stack<0xff> stack{};
 
@@ -46,13 +15,6 @@ namespace registers {
 	u8 S   = 0x00; //!< @brief Stack pointer
 } // namespace registers
 
-enum Flags {
-	negative = 0x01,
-	equal = 0x02,
-	lower = 0x03,
-	greater = 0x04
-}; // namespace flags
-
 /**
 * @brief Buffer in which will be loader the ROM
 */
@@ -61,7 +23,7 @@ std::vector<u8> ROM(1000);
 /**
 * @brief RAM
 */
-std::array<u8, 0xffff> RAM;
+std::array<u8, 0xffff> RAM{};
 unsigned ram_ptr = 0x100;
 
 /**
@@ -77,7 +39,7 @@ std::array<u8, 0xffff> VRAM; // Not used yet
  */
 inline u8 read_next() {
 	if (registers::PC >= ROM.size()) {
-		throw OutOfRangeException{"Out of ROM file"};
+		throw Asm::Errors::OutOfRangeException{"Out of ROM file"};
 	}
 	return ROM[++registers::PC];
 }
@@ -90,7 +52,7 @@ inline u8 read_next() {
  */
 inline u8 read_addr() {
 	if (registers::PC >= ROM.size()) {
-		throw OutOfRangeException{"Out of ROM file"};
+		throw Asm::Errors::OutOfRangeException{"Out of ROM file"};
 	}
 	return ROM[ROM[++registers::PC]];
 }

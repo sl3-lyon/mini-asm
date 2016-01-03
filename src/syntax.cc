@@ -1,7 +1,7 @@
 #include "syntax.h"
 
-#include <cctype> // std::isspace
-#include <assert.h>
+#include <cassert> // assert
+#include <cctype>  // std::isspace, std::tolower
 
 //! @brief anonymous namespace
 namespace {
@@ -18,64 +18,62 @@ namespace {
 		}
 		return cpy;
 	}
+}
 
-	/**
-   * @brief Checks if line is a correct ASM instruction
-   * @param line The line we work with
-   * @returns True if line is a correct ASM instruction, false otherwise
-   * @throw /
-   */
-	bool is_inst(std::string const& line) noexcept {
-		for (auto const& regex : Asm::Syntax::regexes) {
-			if (std::regex_match(to_lower(line), regex)) {
-				return true;
-			}
+/**
+ * @brief Checks if line is a correct ASM instruction
+ * @param line The line we work with
+ * @returns True if line is a correct ASM instruction, false otherwise
+ * @throw /
+ */
+bool Asm::Syntax::is_inst(std::string const& line) noexcept {
+	for (auto const& regex : Asm::Syntax::regexes) {
+		if (std::regex_match(to_lower(line), regex)) {
+			return true;
 		}
-		return false;
 	}
+	return false;
+}
 
-	/**
-   * @brief Checks if the ASM instruction has at leat 1 parameter
-   * @param line The line we work with
-   * @returns True if the ASM instruction has at leat 1 parameter, false otherwise
-   */
-	bool has_1_parameter(std::string const& line) {
-		using namespace Asm::Syntax;
-		std::vector<std::regex> regexes = {
-			regex_mov, regex_add,
-			regex_sub, regex_cmp,
-			regex_or, regex_and,
-			regex_xor, regex_push,
-			regex_pop, regex_jmp
-		};
-		for (auto const& regex : regexes) {
-			if (std::regex_match(to_lower(line), regex)) {
-				return true;
-			}
+/**
+ * @brief Checks if the ASM instruction has at leat 1 parameter
+ * @param line The line we work with
+ * @returns True if the ASM instruction has at leat 1 parameter, false otherwise
+ */
+bool Asm::Syntax::has_1_parameter(std::string const& line) {
+	const std::vector<std::regex> regexes = {
+		regex_mov, regex_add,
+		regex_sub, regex_cmp,
+		regex_or, regex_and,
+		regex_xor, regex_push,
+		regex_pop, regex_jmp
+	};
+	for (auto const& regex : regexes) {
+		if (std::regex_match(to_lower(line), regex)) {
+			return true;
 		}
-		return false;
 	}
+	return false;
+}
 
-	/**
-   * @brief Checks if line is a correct ASM instruction
-   * @param line The line we work with
-   * @returns True if line is a correct ASM instruction, false otherwise
-   */
-	bool has_2_parameters(std::string const& line) {
-		using namespace Asm::Syntax;
-		std::vector<std::regex> regexes = {
-			regex_mov, regex_add,
-			regex_sub, regex_cmp,
-			regex_or, regex_and,
-			regex_xor
-		};
-		for (auto const& regex : regexes) {
-			if (std::regex_match(to_lower(line), regex)) {
-				return true;
-			}
+/**
+ * @brief Checks if line is a correct ASM instruction
+ * @param line The line we work with
+ * @returns True if line is a correct ASM instruction, false otherwise
+ */
+bool Asm::Syntax::has_2_parameters(std::string const& line) {
+	const std::vector<std::regex> regexes = {
+		regex_mov, regex_add,
+		regex_sub, regex_cmp,
+		regex_or, regex_and,
+		regex_xor
+	};
+	for (auto const& regex : regexes) {
+		if (std::regex_match(to_lower(line), regex)) {
+			return true;
 		}
-		return false;
 	}
+	return false;
 }
 
 /**
@@ -126,7 +124,7 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 std::string Asm::Syntax::extract_param2(std::string const& line) {
-	assert(has_1_parameter(to_lower(line)));
+	assert(has_2_parameters(to_lower(line)));
 	unsigned i{};
 	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
 	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
