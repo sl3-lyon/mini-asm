@@ -39,7 +39,7 @@ public:
 			} else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
 				sub += buffer[index];
 			} else {
-				throw std::runtime_error{ "Unknown value " + buffer[index] };
+				throw std::runtime_error{"Unknown value " + std::to_string(buffer[index])};
 			}
 			index++;
 			if (isdigit(buffer[index])) {
@@ -47,7 +47,7 @@ public:
 			} else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
 				sub += buffer[index];
 			} else {
-				throw std::runtime_error{ "Unknown value " + buffer[index] };
+				throw std::runtime_error{"Unknown value " + std::to_string(buffer[index])};
 			}
 			index++;
 			unsigned int x;
@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
 		start_shell_mode();
 	} else if (argc == 2) {
 		// TODO - Read file
+		(void)argv;
 	} else {
 		std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
 	}
