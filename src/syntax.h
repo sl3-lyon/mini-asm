@@ -26,16 +26,16 @@ std::regex const regex_jge{"[ \t]*(jge)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|
 
 
 const std::vector<std::regex> regexes = {
-	regex_mov,
-	regex_add,
-	regex_sub,
-	regex_cmp,
-	regex_or,
-	regex_and,
-	regex_xor,
-	regex_push,
-	regex_pop,
-	regex_jmp
+  regex_mov,
+  regex_add,
+  regex_sub,
+  regex_cmp,
+  regex_or,
+  regex_and,
+  regex_xor,
+  regex_push,
+  regex_pop,
+  regex_jmp
 };
 
 const std::vector<std::string> instructions = {
