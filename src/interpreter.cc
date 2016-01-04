@@ -45,7 +45,7 @@ void Asm::Interpreter::intepret_instruction(std::string const& inst) {
 	using namespace Asm::Syntax;
 	auto instruction = inst.substr(0, inst.find(";"));
 	if (!is_inst(instruction)) {
-		throw std::runtime_error{"Invalid instruction '" + instruction + "'\n"};
+		throw std::runtime_error{"Invalid instruction '" + instruction};
 	}
 	auto op = extract_op(instruction);
 	auto param1 = (has_1_parameter(instruction)) ? extract_param1(instruction) : "";
@@ -85,9 +85,9 @@ u8& get_register(std::string const& name) {
 	if (name == "x") return registers::X;
 	if (name == "y") return registers::Y;
 	if (name == "s" || name == "p" || name == "pc") {
-		throw std::runtime_error{"Cannot access to register '" + to_upper(name) + "'\n"};
+		throw std::runtime_error{"Cannot access to register '" + to_upper(name) + "'"};
 	}
-	throw std::runtime_error{"Invalid token '" + name + "'\n"};
+	throw std::runtime_error{"Invalid token '" + name + "'"};
 }
 
 inline u8 from_hex(std::string const& hex) {
@@ -135,7 +135,7 @@ void exec_mov(std::string const& param1, std::string const& param2) {
 		if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"}))  idx = from_bin(param1.substr(3)); // Bin
 		RAM[idx] = get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute MOV\n"};
+		throw std::runtime_error{"Cannot execute MOV"};
 	}
 }
 
@@ -145,7 +145,7 @@ void exec_add(std::string const& param1, std::string const& param2) {
 	} else if (is_address(param1)) {
 		RAM[get_value_of(param1)] += get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute ADD\n"};
+		throw std::runtime_error{"Cannot execute ADD"};
 	}
 }
 
@@ -155,7 +155,7 @@ void exec_sub(std::string const& param1, std::string const& param2) {
 	} else if (is_address(param1)) {
 		RAM[get_value_of(param1)] -= get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute SUB\n"};
+		throw std::runtime_error{"Cannot execute SUB"};
 	}
 }
 
@@ -177,7 +177,7 @@ void exec_or(std::string const& param1, std::string const& param2) {
 	} else if (is_address(param1)) {
 		RAM[get_value_of(param1)] |= get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute OR\n"};
+		throw std::runtime_error{"Cannot execute OR"};
 	}
 }
 
@@ -187,7 +187,7 @@ void exec_and(std::string const& param1, std::string const& param2) {
 	} else if (is_address(param1)) {
 		RAM[get_value_of(param1)] &= get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute AND\n"};
+		throw std::runtime_error{"Cannot execute AND"};
 	}
 }
 
@@ -197,7 +197,7 @@ void exec_xor(std::string const& param1, std::string const& param2) {
 	} else if (is_address(param1)) {
 		RAM[get_value_of(param1)] ^= get_value_of(param2);
 	} else {
-		throw std::runtime_error{"Cannot execute XOR\n"};
+		throw std::runtime_error{"Cannot execute XOR"};
 	}
 }
 
