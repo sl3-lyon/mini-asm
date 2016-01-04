@@ -127,7 +127,7 @@ void start_shell_mode() {
 			if (is_command(line)) interpret_command(line);
 			else Asm::Interpreter::intepret_instruction(line);
 		} catch (std::exception const& e) {
-			std::cout << std::string{"Error: "} + e.what();
+			std::cout << std::string{"Error: "} + e.what() + "\n";
 		}
 	} while (line != "exit");
 }
