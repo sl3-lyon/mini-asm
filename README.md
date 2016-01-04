@@ -10,5 +10,5 @@ This is a custom mini ASM language based on 6502 and conventional instructions (
 * **PC** *(Program Counter)* <br />
 * **S** *(Stack pointer)* <br />
 
-##Opcodes
+###Opcodes
 Coming soon
