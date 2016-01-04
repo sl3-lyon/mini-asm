@@ -1,4 +1,4 @@
-NESEmulator [![Build Status](https://travis-ci.org/tyr-sl3/mini-asm.svg)](https://travis-ci.org/tyr-sl3/mini-asm)
+Mini ASM [![Build Status](https://travis-ci.org/tyr-sl3/mini-asm.svg)](https://travis-ci.org/tyr-sl3/mini-asm)
 ===========
 # mini-asm
 Custom mini ASM language &amp; CPU emulator. Will be used for a pseudo NES emulator (that's why there's a Video RAM)
