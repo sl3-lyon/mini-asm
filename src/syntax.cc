@@ -11,13 +11,13 @@ namespace {
    * @returns str as lower string
    * @throw std::bad_alloc if std::string::op+= fails
    */
-	std::string to_lower(std::string const& str) {
-		std::string cpy;
-		for (auto const c : str) {
-			cpy += std::tolower(c);
-		}
-		return cpy;
-	}
+  std::string to_lower(std::string const& str) {
+    std::string cpy;
+    for (auto const c : str) {
+      cpy += std::tolower(c);
+    }
+    return cpy;
+  }
 }
 
 /**
@@ -27,12 +27,12 @@ namespace {
  * @throw /
  */
 bool Asm::Syntax::is_inst(std::string const& line) noexcept {
-	for (auto const& regex : Asm::Syntax::regexes) {
-		if (std::regex_match(to_lower(line), regex)) {
-			return true;
-		}
-	}
-	return false;
+  for (auto const& regex : Asm::Syntax::regexes) {
+    if (std::regex_match(to_lower(line), regex)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -44,12 +44,12 @@ bool Asm::Syntax::is_inst(std::string const& line) noexcept {
  * @throw std::regex_error If any regexe is not correct
  */
 inline bool match_any(std::string const& str, std::vector<std::regex> regexes) {
-	for (auto const& regex : regexes) {
-		if (std::regex_match(to_lower(str), regex)) {
-			return true;
-		}
-	}
-	return false;
+  for (auto const& regex : regexes) {
+    if (std::regex_match(to_lower(str), regex)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -58,12 +58,12 @@ inline bool match_any(std::string const& str, std::vector<std::regex> regexes) {
  * @returns True if the ASM instruction has at leat 1 parameter, false otherwise
  */
 bool Asm::Syntax::has_1_parameter(std::string const& line) {
-	return match_any(line, { regex_mov,
-		regex_add, regex_sub, regex_cmp, regex_or,
-		regex_and, regex_xor, regex_push, regex_pop,
-		regex_jmp, regex_je, regex_jg, regex_jge,
-		regex_jl, regex_jle, regex_jmp, regex_jne
-	});
+  return match_any(line, { regex_mov,
+    regex_add, regex_sub, regex_cmp, regex_or,
+    regex_and, regex_xor, regex_push, regex_pop,
+    regex_jmp, regex_je, regex_jg, regex_jge,
+    regex_jl, regex_jle, regex_jmp, regex_jne
+  });
 }
 
 /**
@@ -72,10 +72,10 @@ bool Asm::Syntax::has_1_parameter(std::string const& line) {
  * @returns True if line is a correct ASM instruction, false otherwise
  */
 bool Asm::Syntax::has_2_parameters(std::string const& line) {
-	return match_any(line, { regex_mov,
-		regex_add, regex_sub, regex_cmp,
-		regex_or, regex_and, regex_xor
-	});
+  return match_any(line, { regex_mov,
+    regex_add, regex_sub, regex_cmp,
+    regex_or, regex_and, regex_xor
+  });
 }
 
 /**
@@ -86,14 +86,14 @@ bool Asm::Syntax::has_2_parameters(std::string const& line) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 std::string Asm::Syntax::extract_op(std::string const& line) {
-	assert(is_inst(line));
-	unsigned i{};
-	std::string inst;
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++) {
-		inst += line[i];
-	}
-	return inst;
+  assert(is_inst(line));
+  unsigned i{};
+  std::string inst;
+  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++) {
+    inst += line[i];
+  }
+  return inst;
 }
 
 /**
@@ -105,16 +105,16 @@ std::string Asm::Syntax::extract_op(std::string const& line) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 std::string Asm::Syntax::extract_param1(std::string const& line) {
-	assert(has_1_parameter(to_lower(line)));
-	unsigned i{};
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-	std::string param1;
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
-		param1 += line[i];
-	}
-	return param1;
+  assert(has_1_parameter(to_lower(line)));
+  unsigned i{};
+  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
+  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+  std::string param1;
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
+    param1 += line[i];
+  }
+  return param1;
 }
 
 /**
@@ -126,16 +126,16 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 std::string Asm::Syntax::extract_param2(std::string const& line) {
-	assert(has_2_parameters(to_lower(line)));
-	unsigned i{};
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
-	for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-	for (; i < line.size() && !std::isspace(line[i]); i++); // Skip param 1
-	for (; i < line.size() && (std::isspace(line[i]) || line[i] == ','); i++); // Skip all spaces
-	std::string param;
-	for (; i < line.size() && !std::isspace(line[i]) && line[i] != ';'; i++) {
-		param += line[i];
-	}
-	return param;
+  assert(has_2_parameters(to_lower(line)));
+  unsigned i{};
+  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
+  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
+  for (; i < line.size() && !std::isspace(line[i]); i++); // Skip param 1
+  for (; i < line.size() && (std::isspace(line[i]) || line[i] == ','); i++); // Skip all spaces
+  std::string param;
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ';'; i++) {
+    param += line[i];
+  }
+  return param;
 }
