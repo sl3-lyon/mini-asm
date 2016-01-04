@@ -26,3 +26,4 @@ Shell mode - Type  'exit' to stop
 8
 ```
 ####Interpreter (coming soon)
+Reads an ASM file
