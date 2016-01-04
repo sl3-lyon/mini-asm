@@ -10,5 +10,19 @@ This is a custom mini ASM language based on 6502 and conventional instructions (
 * **PC** *(Program Counter)* <br />
 * **S** *(Stack pointer)* <br />
 
-###Opcodes
-Coming soon
+###Modes
+####Shell mode
+Command-line interpreter
+```
+Mini ASM version 0.1.0
+Created by Vincent P.
+Shell mode - Type  'exit' to stop
+> mov A, 42
+> p r A
+42
+> mov X, 50
+> sub X, A
+> p r X
+8
+```
+####Interpreter (coming soon)
