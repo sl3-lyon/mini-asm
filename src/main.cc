@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "infos.h"
 #include "interpreter.h"
+#include "strmanip.h" // to_lower, to_upper
 
 /**
 * @brief Swap the bytes of 2-bytes unsigned number
@@ -88,7 +89,7 @@ void start_shell_mode() {
     try {
       std::cout << "> ";
       std::getline(std::cin, line);
-      interpret(line);
+      interpret(to_lower(line));
     } catch (std::exception const& e) {
       std::cout << std::string{"Error: "} + e.what();
     }
