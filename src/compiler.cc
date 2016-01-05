@@ -140,9 +140,9 @@ std::map<u8, std::function<void(void)>> op = {
   { 0x15, []() -> void { registers::Y <<= read_next(); } }, // shl Y, VALUE
 
   // --[ SHR ]--
-  { 0x16, []() -> void { registers::A >>= read_next(); } }, // shl A, VALUE
-  { 0x17, []() -> void { registers::X >>= read_next(); } }, // shl X, VALUE
-  { 0x18, []() -> void { registers::Y >>= read_next(); } }, // shl Y, VALUE
+  { 0x16, []() -> void { registers::A >>= read_next(); } }, // shr A, VALUE
+  { 0x17, []() -> void { registers::X >>= read_next(); } }, // shr X, VALUE
+  { 0x18, []() -> void { registers::Y >>= read_next(); } }, // shr Y, VALUE
 
   // --[ CMP ]--
   { 0x19, []() -> void { cmp(registers::A, registers::X); } }, // cmp A, X
