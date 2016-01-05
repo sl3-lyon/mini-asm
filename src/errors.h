@@ -9,12 +9,12 @@ namespace Errors {
 
 class OutOfRangeException : public std::exception {
 public:
-	explicit OutOfRangeException(std::string const& what) : what_(what) {}
-	const char* what() const noexcept override {
-		return what_.c_str();
-	}
+  explicit OutOfRangeException(std::string const& what) : what_(what) {}
+  const char* what() const noexcept override {
+    return what_.c_str();
+  }
 private:
-	std::string what_;
+  std::string what_;
 };
 
 } // namespace Asm::Errors
