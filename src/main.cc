@@ -15,55 +15,6 @@ constexpr u16 SwapBytes(u16 value) noexcept { // Not used yet
   return ((value & 0xff) << 8) + (value >> 8);
 }
 
-// Not used yet
-class RomReader {
-public:
-  explicit RomReader(std::string const& path) : file_(path) {
-    if (file_) {
-      std::string line;
-      while (std::getline(file_, line)) {
-        buffer_ += line;
-      }
-      // TODO - Add header to ROM and ignore it here
-    }
-  }
-
-  std::vector<u8> bytes() const {
-    std::vector<u8> bytes;
-    auto buffer = buffer_;
-    unsigned index{};
-    while (index < buffer.size()) {
-      std::string sub;
-      if (isdigit(buffer[index])) {
-        sub += std::to_string(buffer[index] - '0');
-      } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
-        sub += buffer[index];
-      } else {
-        throw std::runtime_error{ "Unknown value " + buffer[index] };
-      }
-      index++;
-      if (isdigit(buffer[index])) {
-        sub += std::to_string(buffer[index] - '0');
-      } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
-        sub += buffer[index];
-      } else {
-        throw std::runtime_error{ "Unknown value " + buffer[index] };
-      }
-      index++;
-      unsigned int x;
-      std::stringstream ss;
-      ss << std::hex << sub;
-      ss >> x;
-      bytes.push_back(static_cast<u8>(x));
-    }
-    return bytes;
-  }
-
-private:
-  std::ifstream file_;
-  std::string buffer_;
-};
-
 void start_shell_mode();
 
 int main(int argc, char **argv) {
