@@ -85,10 +85,11 @@ void start_shell_mode() {
     << "Created by Vincent P." << "\n"
     << "Shell mode - Type  'exit' to stop \n";
   std::string line;
-  while (line != "exit") {
+  while (true) {
     try {
       std::cout << "> ";
       std::getline(std::cin, line);
+      if (line == "exit") break;
       interpret(to_lower(line));
     } catch (std::exception const& e) {
       std::cout << std::string{"Error: "} + e.what();
