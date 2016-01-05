@@ -83,9 +83,8 @@ void start_shell_mode() {
   std::cout << "Mini ASM version " + App::version << "\n"
     << "Created by Vincent P." << "\n"
     << "Shell mode - Type  'exit' to stop \n";
-
   std::string line;
-  do {
+  while {
     try {
       std::cout << "> ";
       std::getline(std::cin, line);
@@ -93,5 +92,5 @@ void start_shell_mode() {
     } catch (std::exception const& e) {
       std::cout << std::string{"Error: "} + e.what();
     }
-  } while (line != "exit");
+  }
 }
