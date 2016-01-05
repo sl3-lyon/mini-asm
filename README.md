@@ -18,12 +18,12 @@ Mini ASM version 0.1.0
 Created by Vincent P.
 Shell mode - Type  'exit' to stop
 > mov A, 42
-> p r A
+> print register A
 42
-> mov X, 50
-> sub X, A
-> p r X
-8
+> sub A, 2
+> p r A
+40
 ```
+**Note** - ```p r A``` is the same thing as ```print register A```.
 ####Interpreter (coming soon)
 Reads an ASM file
