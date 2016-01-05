@@ -6,6 +6,7 @@
 namespace Asm {
 namespace Syntax {
 
+// TODO - Refactoring
 std::regex const regex_mov{"[ \t]*mov[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
 std::regex const regex_add{"[ \t]*add[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
 std::regex const regex_sub{"[ \t]*sub[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
@@ -24,18 +25,29 @@ std::regex const regex_jle{"[ \t]*(jle)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|
 std::regex const regex_jg{"[ \t]*(jg)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
 std::regex const regex_jge{"[ \t]*(jge)[ \t]+([a|x|y|s|p|pc]|[0-9]+|0x[0-9a-f]+|0b[0-1]+)[ \t]*"};
 
+std::regex const regex_shl{"[ \t]*shl[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+std::regex const regex_shr{"[ \t]*shr[ \t]+([a|x|y|s|p|pc]|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*,[ \t]*([a|x|y|s|p|pc]|0b[0-1]+|0x[0-9a-f]+|[0-9]+|\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)[ \t]*"};
+// Fin TODO
 
 const std::vector<std::regex> regexes = {
-  regex_mov,
-  regex_add,
-  regex_sub,
-  regex_cmp,
-  regex_or,
-  regex_and,
-  regex_xor,
-  regex_push,
-  regex_pop,
-  regex_jmp
+	regex_mov,
+	regex_add,
+	regex_sub,
+	regex_cmp,
+	regex_or,
+	regex_and,
+	regex_xor,
+	regex_push,
+	regex_pop,
+	regex_jmp,
+	regex_je,
+	regex_jne,
+	regex_jl,
+	regex_jle,
+	regex_jg,
+	regex_jge,
+	regex_shl,
+	regex_shr
 };
 
 const std::vector<std::string> instructions = {
