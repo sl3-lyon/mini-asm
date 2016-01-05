@@ -39,7 +39,7 @@ public:
       } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
         sub += buffer[index];
       } else {
-        throw std::runtime_error{"Unknown value " + std::to_string(buffer[index])};
+        throw std::runtime_error{ "Unknown value " + buffer[index] };
       }
       index++;
       if (isdigit(buffer[index])) {
@@ -47,7 +47,7 @@ public:
       } else if (tolower(buffer[index]) >= 'a' && tolower(buffer[index]) <= 'f') {
         sub += buffer[index];
       } else {
-        throw std::runtime_error{"Unknown value " + std::to_string(buffer[index])};
+        throw std::runtime_error{ "Unknown value " + buffer[index] };
       }
       index++;
       unsigned int x;
@@ -71,14 +71,14 @@ int main(int argc, char **argv) {
     start_shell_mode();
   } else if (argc == 2) {
     // TODO - Read file
-    (void)argv;
   } else {
     std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
   }
 }
 
 const std::vector<std::regex> command_regexes = {
-  std::regex{"p r( (a|x|y|p|s|pc))?"}
+  std::regex{"(p r|print register) (a|x|y|p|s|pc)"},
+  std::regex{"(p r|print registers)"}
 };
 
 bool is_command(std::string const& line) {
@@ -100,9 +100,11 @@ void print_registers() {
 }
 
 void interpret_command(std::string const& command) {
-  if (command == "p r") print_registers();
+  if (command == "p r" || command == "print registers") print_registers();
   else if (std::regex_match(command, std::regex{"p r (a|x|y|p|s|pc)"})) {
     std::cout << static_cast<unsigned>(get_register(command.substr(4))) << "\n";
+  } else if (std::regex_match(command, std::regex{"print register (a|x|y|p|s|pc)"})) {
+    std::cout << static_cast<unsigned>(get_register(command.substr(15))) << "\n";
   }
 }
 
@@ -111,6 +113,18 @@ inline bool is_space(std::string const& str) noexcept {
     if (!isspace(c)) return false;
   }
   return true;
+}
+
+inline bool is_comment(std::string const& str) noexcept {
+  unsigned i{};
+  for (; i < str.size() && isspace(str[i]); i++);
+  return i < str.size() && str[i] == ';';
+}
+
+void interpret(std::string const& line) {
+  if (is_space(line) || is_comment(line)) return;
+  if (is_command(line)) interpret_command(line);
+  else Asm::Interpreter::intepret_instruction(line);
 }
 
 void start_shell_mode() {
@@ -123,11 +137,9 @@ void start_shell_mode() {
     try {
       std::cout << "> ";
       std::getline(std::cin, line);
-      if (is_space(line)) continue;
-      if (is_command(line)) interpret_command(line);
-      else Asm::Interpreter::intepret_instruction(line);
+      interpret(line);
     } catch (std::exception const& e) {
-      std::cout << std::string{"Error: "} + e.what() + "\n";
+      std::cout << std::string{"Error: "} + e.what();
     }
   } while (line != "exit");
 }
