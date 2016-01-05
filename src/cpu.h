@@ -4,8 +4,6 @@
 #include <array>      // std::array
 #include <cassert>    // assert
 #include <cstdint>    // uint8_t, uint16_t
-#include <functional> // std::function
-#include <map>        // std::map
 #include <vector>     // std::vector
 
 #include "errors.h" // Asm::Errors::OutOfRangeException
