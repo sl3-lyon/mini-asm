@@ -1,6 +1,6 @@
 Mini ASM [![Build Status](https://travis-ci.org/tyr-sl3/mini-asm.svg)](https://travis-ci.org/tyr-sl3/mini-asm)
 ===========
-Custom mini ASM language &amp; CPU emulator. <br />
+Custom mini ASM language &amp; CPU emulator written in C++ (C++14). <br />
 This is a custom mini ASM language based on 6502 and conventional instructions (MOV, etc...). <br />
 ###Registers
 * **A** *(Accumulator)* <br />
