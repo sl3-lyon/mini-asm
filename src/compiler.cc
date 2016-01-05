@@ -1,6 +1,4 @@
 #include "compiler.h"
-#include <functional> // std::function
-#include <map>        // std::map
 
 /**
  * @brief Returns the next opcode
