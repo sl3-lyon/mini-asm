@@ -111,7 +111,7 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
   for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
   for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
   std::string param1;
-  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' && line[i] != ';'; i++) {
     param1 += line[i];
   }
   return param1;
