@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
     start_shell_mode();
   } else if (argc == 2) {
     // TODO - Read file
+    (void)argv;
   } else {
     std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
   }
