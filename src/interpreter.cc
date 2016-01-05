@@ -1,43 +1,13 @@
 #include "interpreter.h"
-#include "cpu.h"    // registers
-#include "syntax.h" // is_inst
+#include "cpu.h"      // registers
+#include "strmanip.h" // to_lower, to_upper
+#include "syntax.h"   // is_inst
 
 #include <bitset>  // std::bitset
-#include <cctype>  // std::toupper
 #include <sstream> // std::stringstream
 #include <regex>   // std::regex, std::regex_match
 
 #include <stdexcept>  // std::runtime_error
-
-//! @brief anonymous namespace
-namespace {
-  /**
-   * @brief Turns a string into a lower string
-   * @param str The string we work with
-   * @returns str as lower string
-   * @throw std::bad_alloc if std::string::op+= fails
-   */
-  std::string to_lower(std::string const& str) {
-    std::string cpy;
-    for (auto const c : str) {
-      cpy += std::tolower(c);
-    }
-    return cpy;
-  }
-  /**
-   * @brief Turns a string into a lower string
-   * @param str The string we work with
-   * @returns str as lower string
-   * @throw std::bad_alloc if std::string::op+= fails
-   */
-  std::string to_upper(std::string const& str) {
-    std::string cpy;
-    for (auto const c : str) {
-      cpy += std::toupper(c);
-    }
-    return cpy;
-  }
-}
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2);
 
