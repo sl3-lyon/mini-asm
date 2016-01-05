@@ -13,7 +13,7 @@ This is a custom mini ASM language based on 6502 and conventional instructions (
 ###Modes
 ####Shell mode
 Command-line interpreter
-```
+```asm
 Mini ASM version 0.1.0
 Created by Vincent P.
 Shell mode - Type  'exit' to stop
