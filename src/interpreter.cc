@@ -193,6 +193,14 @@ void exec_jg(std::string const& param1) {
 void exec_jge(std::string const& param1) {
   jump_if(param1, []() -> bool { return registers::P & Flags::greater || registers::P & Flags::equal; });
 }
+
+void exec_shl(std::string const& param1, std::string const& param2) {
+  value_of(param1) <<= get_value_of(param2);
+}
+
+void exec_shr(std::string const& param1, std::string const& param2) {
+  value_of(param1) >>= get_value_of(param2);
+}
 // End TODO
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
@@ -228,5 +236,9 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
     exec_jg(param1);
   } else if (op == "jge") {
     exec_jge(param1);
+  } else if (op == "shl") {
+    exec_shl(param1, param2);
+  } else if (op == "shr") {
+    exec_shr(param1, param2);
   }
 }
