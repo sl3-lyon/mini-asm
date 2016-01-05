@@ -62,7 +62,8 @@ bool Asm::Syntax::has_1_parameter(std::string const& line) {
     regex_add, regex_sub, regex_cmp, regex_or,
     regex_and, regex_xor, regex_push, regex_pop,
     regex_jmp, regex_je, regex_jg, regex_jge,
-    regex_jl, regex_jle, regex_jmp, regex_jne
+    regex_jl, regex_jle, regex_jmp, regex_jne,
+    regex_shl, regex_shr
   });
 }
 
@@ -74,7 +75,8 @@ bool Asm::Syntax::has_1_parameter(std::string const& line) {
 bool Asm::Syntax::has_2_parameters(std::string const& line) {
   return match_any(line, { regex_mov,
     regex_add, regex_sub, regex_cmp,
-    regex_or, regex_and, regex_xor
+    regex_or, regex_and, regex_xor,
+    regex_shl, regex_shr
   });
 }
 
@@ -111,7 +113,7 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
   for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
   for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
   std::string param1;
-  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' && line[i] != ';'; i++) {
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
     param1 += line[i];
   }
   return param1;
