@@ -110,10 +110,10 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
   assert(has_1_parameter(to_lower(line)));
   unsigned i{};
   for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
+  for (; i < line.size() && !std::isspace(line[i]); i++); // Skip operand
   for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
   std::string param1;
-  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' &&  line[i] != ';'; i++) {
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ',' && line[i] != ';'; i++) {
     param1 += line[i];
   }
   return param1;
@@ -130,10 +130,7 @@ std::string Asm::Syntax::extract_param1(std::string const& line) {
 std::string Asm::Syntax::extract_param2(std::string const& line) {
   assert(has_2_parameters(to_lower(line)));
   unsigned i{};
-  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ','; i++); // Skip operand
-  for (; i < line.size() && std::isspace(line[i]); i++); // Skip all spaces
-  for (; i < line.size() && !std::isspace(line[i]); i++); // Skip param 1
+  for (; i < line.size() && line[i] != ','; i++); // Skip param 1
   for (; i < line.size() && (std::isspace(line[i]) || line[i] == ','); i++); // Skip all spaces
   std::string param;
   for (; i < line.size() && !std::isspace(line[i]) && line[i] != ';'; i++) {
