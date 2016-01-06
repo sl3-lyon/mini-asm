@@ -2,11 +2,8 @@
 #define __CPU_H__
 
 #include <array>      // std::array
-#include <cassert>    // assert
 #include <cstdint>    // uint8_t, uint16_t
 #include <vector>     // std::vector
-
-#include "errors.h" // Asm::Errors::OutOfRangeException
 
 using u8 = uint8_t;
 using u16 = uint16_t;
