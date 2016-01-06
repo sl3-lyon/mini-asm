@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "stack.h" // Stack
 
 /**
  * @brief Returns the next opcode
