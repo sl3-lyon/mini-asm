@@ -1,9 +1,10 @@
 #ifndef __STACK_H__
 #define __STACK_H__
 
-#include <cassert>    // assert
+#include <array>   // std::array
+#include <cassert> // assert
 
-#include "cpu.h"
+#include "cpu.h"    // u8, registers
 #include "errors.h" // Asm::Errors::OutOfRangeException
 
 template <unsigned size>
