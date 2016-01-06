@@ -4,10 +4,9 @@
 #include "stack.h"    // Stack
 #include "syntax.h"   // is_inst
 
-#include <bitset>  // std::bitset
-#include <sstream> // std::stringstream
-#include <regex>   // std::regex, std::regex_match
-
+#include <bitset>     // std::bitset
+#include <regex>      // std::regex, std::regex_match
+#include <sstream>    // std::stringstream
 #include <stdexcept>  // std::runtime_error
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2);
@@ -82,8 +81,8 @@ inline u8 get_value_of(std::string const& value) {
   // Address
   if (is_address(val)) {
     if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return RAM[static_cast<u8>(std::stoi(val.substr(1)))]; // Decimal
-    if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"}))  return RAM[from_hex(val.substr(3))]; // Hex
-    if (std::regex_match(val, std::regex{"\\*0b[0-1]+"}))  return RAM[from_bin(val.substr(3))]; // Bin
+    if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return RAM[from_hex(val.substr(3))]; // Hex
+    if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return RAM[from_bin(val.substr(3))]; // Bin
   }
   // Simple value
   else {
@@ -101,9 +100,13 @@ void exec_mov(std::string const& param1, std::string const& param2) {
     get_register(param1) = get_value_of(param2);
   } else if (is_address(to_lower(param1))) {
     u8 idx = 0;
-    if (std::regex_match(to_lower(param1), std::regex{"\\*[0-9]+"})) idx = static_cast<u8>(std::stoi(param1.substr(1))); // Decimal
-    if (std::regex_match(to_lower(param1), std::regex{"\\*0x[0-9a-f]+"}))  idx = from_hex(param1.substr(3)); // Hex
-    if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"}))  idx = from_bin(param1.substr(3)); // Bin
+    if (std::regex_match(to_lower(param1), std::regex{"\\*[0-9]+"})) {
+      idx = static_cast<u8>(std::stoi(param1.substr(1))); // Decimal
+    } else if (std::regex_match(to_lower(param1), std::regex{"\\*0x[0-9a-f]+"})) {
+      idx = from_hex(param1.substr(3)); // Hex
+    } else if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"})) {
+      idx = from_bin(param1.substr(3)); // Bin
+    }
     RAM[idx] = get_value_of(param2);
   } else {
     throw std::runtime_error{"Cannot execute MOV\n"};
