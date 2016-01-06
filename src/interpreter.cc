@@ -72,7 +72,7 @@ inline u8 from_bin(std::string const& bin) {
   return static_cast<u8>(std::bitset<8>(bin).to_ulong());
 }
 
-inline u8 get_value_of(std::string const& value) {
+inline u8 value_of(std::string const& value) {
   auto val = to_lower(value);
   // Register
   if (is_register(val)) {
@@ -97,7 +97,7 @@ inline u8 get_value_of(std::string const& value) {
 // TODO - Refactoring
 void exec_mov(std::string const& param1, std::string const& param2) {
   if (is_register(param1)) {
-    get_register(param1) = get_value_of(param2);
+    get_register(param1) = value_of(param2);
   } else if (is_address(to_lower(param1))) {
     u8 idx = 0;
     if (std::regex_match(to_lower(param1), std::regex{"\\*[0-9]+"})) {
@@ -107,30 +107,29 @@ void exec_mov(std::string const& param1, std::string const& param2) {
     } else if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"})) {
       idx = from_bin(param1.substr(3)); // Bin
     }
-    // idx is u8, no verification needed (max value = 255)
-    RAM[idx] = get_value_of(param2);
+    RAM[idx] = value_of(param2);
   } else {
     throw std::runtime_error{"Cannot execute MOV\n"};
   }
 }
 
-u8& value_of(std::string const& param) {
+u8& ref_to(std::string const& param) {
   if (is_register(param)) return get_register(param);
-  if (is_address(param))  return RAM[get_value_of(param)];
+  if (is_address(param))  return RAM[value_of(param)];
   throw std::runtime_error{"Invalid value " + param};
 }
 
 void exec_add(std::string const& param1, std::string const& param2) {
-  value_of(param1) += get_value_of(param2);
+  ref_to(param1) += value_of(param2);
 }
 
 void exec_sub(std::string const& param1, std::string const& param2) {
-  value_of(param1) -= get_value_of(param2);
+  ref_to(param1) -= value_of(param2);
 }
 
 void exec_cmp(std::string const& param1, std::string const& param2) {
-  auto val1 = get_value_of(param1);
-  auto val2 = get_value_of(param2);
+  auto val1 = value_of(param1);
+  auto val2 = value_of(param2);
   if (val1 == val2) {
     registers::P |= Flags::equal;
   } else if (val1 > val2) {
@@ -141,32 +140,32 @@ void exec_cmp(std::string const& param1, std::string const& param2) {
 }
 
 void exec_or(std::string const& param1, std::string const& param2) {
-  value_of(param1) |= get_value_of(param2);
+  ref_to(param1) |= value_of(param2);
 }
 
 void exec_and(std::string const& param1, std::string const& param2) {
-  value_of(param1) &= get_value_of(param2);
+  ref_to(param1) &= value_of(param2);
 }
 
 void exec_xor(std::string const& param1, std::string const& param2) {
-  value_of(param1) ^= get_value_of(param2);
+  ref_to(param1) ^= value_of(param2);
 }
 
 void exec_push(std::string const& param1) {
-  stack.push(get_value_of(param1));
+  stack.push(value_of(param1));
 }
 
 void exec_pop(std::string const& param1) {
   if (is_register(param1)) {
     get_register(param1) = stack.pop();
   } else if (is_address(param1)) {
-    RAM[get_value_of(param1)] = stack.pop();
+    RAM[value_of(param1)] = stack.pop();
   }
 }
 
 inline void jump_if(std::string const& param1, bool cond) {
   if (cond) {
-    registers::PC = get_value_of(param1);
+    registers::PC = value_of(param1);
   }
 }
 
@@ -199,11 +198,11 @@ void exec_jge(std::string const& param1) {
 }
 
 void exec_shl(std::string const& param1, std::string const& param2) {
-  value_of(param1) <<= get_value_of(param2);
+  ref_to(param1) <<= value_of(param2);
 }
 
 void exec_shr(std::string const& param1, std::string const& param2) {
-  value_of(param1) >>= get_value_of(param2);
+  ref_to(param1) >>= value_of(param2);
 }
 // End TODO
 
