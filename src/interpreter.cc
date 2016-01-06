@@ -163,39 +163,38 @@ void exec_pop(std::string const& param1) {
   }
 }
 
-template <typename Fun>
-inline void jump_if(std::string const& param1, Fun fun) {
-  if (fun()) {
+inline void jump_if(std::string const& param1, bool cond) {
+  if (cond) {
     registers::PC = get_value_of(param1);
   }
 }
 
 void exec_jmp(std::string const& param1) {
-  jump_if(param1, []() -> bool { return true; });
+  jump_if(param1, true);
 }
 
 void exec_je(std::string const& param1) {
-  jump_if(param1, []() -> bool { return (registers::P & Flags::equal) != 0; });
+  jump_if(param1, (registers::P & Flags::equal) != 0);
 }
 
 void exec_jne(std::string const& param1) {
-  jump_if(param1, []() -> bool { return !(registers::P & Flags::equal); });
+  jump_if(param1, !(registers::P & Flags::equal));
 }
 
 void exec_jl(std::string const& param1) {
-  jump_if(param1, []() -> bool { return (registers::P & Flags::lower) != 0; });
+  jump_if(param1, (registers::P & Flags::lower) != 0);
 }
 
 void exec_jle(std::string const& param1) {
-  jump_if(param1, []() -> bool { return registers::P & Flags::lower || registers::P & Flags::equal; });
+  jump_if(param1, registers::P & Flags::lower || registers::P & Flags::equal);
 }
 
 void exec_jg(std::string const& param1) {
-  jump_if(param1, []() -> bool { return (registers::P & Flags::greater) != 0; });
+  jump_if(param1, (registers::P & Flags::greater) != 0);
 }
 
 void exec_jge(std::string const& param1) {
-  jump_if(param1, []() -> bool { return registers::P & Flags::greater || registers::P & Flags::equal; });
+  jump_if(param1, registers::P & Flags::greater || registers::P & Flags::equal);
 }
 
 void exec_shl(std::string const& param1, std::string const& param2) {
