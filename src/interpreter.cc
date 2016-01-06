@@ -107,6 +107,7 @@ void exec_mov(std::string const& param1, std::string const& param2) {
     } else if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"})) {
       idx = from_bin(param1.substr(3)); // Bin
     }
+    // idx is u8, no verification needed (max value = 255)
     RAM[idx] = get_value_of(param2);
   } else {
     throw std::runtime_error{"Cannot execute MOV\n"};
