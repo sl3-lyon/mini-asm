@@ -93,6 +93,11 @@ inline u8 value_of(std::string const& value) {
   throw std::runtime_error{"Invalid token '" + val + "'"};
 }
 
+inline u8& ref_to(std::string const& param) {
+  if (is_register(param)) return get_register(param);
+  if (is_address(param))  return RAM[value_of(param)];
+  throw std::runtime_error{"Invalid value " + param};
+}
 
 // TODO - Refactoring
 void exec_mov(std::string const& param1, std::string const& param2) {
@@ -111,12 +116,6 @@ void exec_mov(std::string const& param1, std::string const& param2) {
   } else {
     throw std::runtime_error{"Cannot execute MOV\n"};
   }
-}
-
-u8& ref_to(std::string const& param) {
-  if (is_register(param)) return get_register(param);
-  if (is_address(param))  return RAM[value_of(param)];
-  throw std::runtime_error{"Invalid value " + param};
 }
 
 void exec_add(std::string const& param1, std::string const& param2) {
