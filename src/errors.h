@@ -12,21 +12,21 @@ namespace Errors {
  */
 class OutOfRangeException : public std::exception {
 public:
-	/**
-	 * @brief ctor
-	 * @param what The exception error text
-	 */
-	explicit OutOfRangeException(std::string const& what) : what_(what) {}
-	/**
-	 * @brief Getter to the exception error text
-	 * @returns The error text
-	 * @throw /
-	 */
-	const char* what() const noexcept override {
-		return what_.c_str();
-	}
+  /**
+   * @brief ctor
+   * @param what The exception error text
+   */
+  explicit OutOfRangeException(std::string const& what) : what_(what) {}
+  /**
+   * @brief Getter to the exception error text
+   * @returns The error text
+   * @throw /
+   */
+  const char* what() const noexcept override {
+    return what_.c_str();
+  }
 private:
-	std::string what_;
+  std::string what_;
 };
 
 } // namespace Asm::Errors
