@@ -11,6 +11,11 @@
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2);
 
+/**
+ * @brief Interprets an instruction
+ * @param inst The instruction
+ * @throws std::runtime_error If the instruction is not correct
+ */
 void Asm::Interpreter::intepret_instruction(std::string const& inst) {
   using namespace Asm::Syntax;
   auto instruction = inst.substr(0, inst.find(";"));
@@ -100,6 +105,11 @@ inline u8& ref_to(std::string const& param) {
 }
 
 // TODO - Refactoring
+
+namespace Asm {
+namespace Interpreter {
+namespace Instructions {
+
 void exec_mov(std::string const& param1, std::string const& param2) {
   if (is_register(param1)) {
     get_register(param1) = value_of(param2);
@@ -203,9 +213,14 @@ void exec_shl(std::string const& param1, std::string const& param2) {
 void exec_shr(std::string const& param1, std::string const& param2) {
   ref_to(param1) >>= value_of(param2);
 }
+
+} // namespace Asm::Interpreter::Instructions
+} // namespace Asm::Interpreter
+} // namespace Asm
 // End TODO
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
+	using namespace Asm::Interpreter::Instructions;
   if (op == "mov") {
     exec_mov(param1, param2);
   } else if (op == "add") {

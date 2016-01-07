@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include "stack.h" // Stack
 
-Stack<0xff> stack{}; //!< @brief Stack
+Asm::Stack<0xff> stack{}; //!< @brief Stack
 
 /**
  * @namespace registers

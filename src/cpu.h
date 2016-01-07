@@ -17,16 +17,19 @@ namespace registers {
   extern u8 S;  // Stack pointer
 } // namespace registers
 
+//!< @brief Different flags for CMP
 enum Flags {
-  negative = 0x01,
-  equal = 0x02,
-  lower = 0x03,
-  greater = 0x04
+  negative = 0x01, //!< @brief "Negative" flag
+  equal = 0x02,    //!< @brief "Equal" flag
+  lower = 0x03,    //!< @brief "Lower" flag
+  greater = 0x04   //!< @brief "Greater" flag
 }; // namespace flags
 
+namespace Asm {
 template <unsigned size>
 class Stack;
-extern Stack<0xff> stack;
+}
+extern Asm::Stack<0xff> stack;
 extern std::array<u8, 0xffff> RAM;
 extern std::vector<u8> ROM;
 
