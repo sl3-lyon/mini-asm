@@ -11,11 +11,11 @@
  * @throw std::bad_alloc if std::string::op+= fails
  */
 inline std::string to_lower(std::string const& str) {
-	std::string cpy;
-	for (auto const c : str) {
-		cpy += std::tolower(c);
-	}
-	return cpy;
+  std::string cpy;
+  for (auto const c : str) {
+    cpy += std::tolower(c);
+  }
+  return cpy;
 }
 /**
  * @brief Turns a string into a lower string
@@ -24,11 +24,11 @@ inline std::string to_lower(std::string const& str) {
  * @throw std::bad_alloc if std::string::op+= fails
  */
 inline std::string to_upper(std::string const& str) {
-	std::string cpy;
-	for (auto const c : str) {
-		cpy += std::toupper(c);
-	}
-	return cpy;
+  std::string cpy;
+  for (auto const c : str) {
+    cpy += std::toupper(c);
+  }
+  return cpy;
 }
 
 #endif // __STRMANIP_H__
