@@ -220,7 +220,7 @@ void exec_shr(std::string const& param1, std::string const& param2) {
 // End TODO
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
-	using namespace Asm::Interpreter::Instructions;
+  using namespace Asm::Interpreter::Instructions;
   if (op == "mov") {
     exec_mov(param1, param2);
   } else if (op == "add") {
