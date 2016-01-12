@@ -1,7 +1,6 @@
 #include "interpreter.h"
 #include "cpu.h"      // registers
 #include "strmanip.h" // to_lower, to_upper
-#include "stack.h"    // Stack
 #include "syntax.h"   // is_inst
 
 #include <bitset>     // std::bitset

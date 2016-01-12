@@ -17,16 +17,21 @@ constexpr u16 SwapBytes(u16 value) noexcept { // Not used yet
 }
 
 void start_shell_mode();
+void read_from_file(std::string const& filename);
 
 int main(int argc, char **argv) {
-  if (argc == 1) {
-    start_shell_mode();
-  } else if (argc == 2) {
-    // TODO - Read file
-    (void)argv;
-  } else {
-    std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
-  }
+  try {
+    if (argc == 1) {
+      start_shell_mode();
+    } else if (argc == 2) {
+      read_from_file(std::string{argv[1]});
+      start_shell_mode();
+    } else {
+      std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
+    }
+  } catch (std::exception const& e) {
+      std::cout << std::string{"Error: "} + e.what();
+    }
 }
 
 const std::vector<std::regex> command_regexes = {
@@ -86,13 +91,25 @@ void start_shell_mode() {
     << "Shell mode - Type  'exit' to stop \n";
   std::string line;
   while (true) {
-    try {
-      std::cout << "> ";
-      std::getline(std::cin, line);
-      if (line == "exit") break;
-      interpret(to_lower(line));
-    } catch (std::exception const& e) {
-      std::cout << std::string{"Error: "} + e.what();
-    }
+    std::cout << "> ";
+    std::getline(std::cin, line);
+    if (line == "exit") break;
+    interpret(to_lower(line));
+  }
+}
+
+void read_from_file(std::string const& filename) {
+  std::ifstream file{filename};
+  if (!file) {
+    throw std::runtime_error{"Cannot open file " + filename};
+  }
+  std::string line;
+  std::vector<std::string> code;
+  // We need to use a vector because of (future) JMP instructions
+  while (std::getline(file, line)) {
+    code.push_back(line);
+  }
+  for (auto const& inst : code) {
+    interpret(to_lower(inst));
   }
 }

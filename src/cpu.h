@@ -5,6 +5,8 @@
 #include <cstdint>    // uint8_t, uint16_t
 #include <vector>     // std::vector
 
+#include "errors.h"
+
 using u8 = uint8_t;
 using u16 = uint16_t;
 
@@ -17,19 +19,37 @@ namespace registers {
   extern u8 S;  // Stack pointer
 } // namespace registers
 
-//!< @brief Different flags for CMP
 enum Flags {
-  negative = 0x01, //!< @brief "Negative" flag
-  equal = 0x02,    //!< @brief "Equal" flag
-  lower = 0x03,    //!< @brief "Lower" flag
-  greater = 0x04   //!< @brief "Greater" flag
+  negative = 0x01,
+  equal = 0x02,
+  lower = 0x03,
+  greater = 0x04
 }; // namespace flags
 
-namespace Asm {
 template <unsigned size>
-class Stack;
-}
-extern Asm::Stack<0xff> stack;
+class Stack {
+  using OutOfRangeException = Asm::Errors::OutOfRangeException;
+public:
+  Stack() noexcept {
+    static_assert(size > 0, "Stack size must be superior than 0");
+  }
+  void push(u8 value) {
+    if (registers::S >= size) throw OutOfRangeException{"Stack overflow"};
+    buffer_[registers::S] = value;
+    registers::S++;
+  }
+  u8 pop() {
+    if (registers::S == 0) throw OutOfRangeException{"Stack is empty"};
+    registers::S--;
+    return buffer_[registers::S];
+  }
+
+private:
+  std::array<u8, size> buffer_;
+};
+
+extern Stack<0xff> stack;
+
 extern std::array<u8, 0xffff> RAM;
 extern std::vector<u8> ROM;
 
