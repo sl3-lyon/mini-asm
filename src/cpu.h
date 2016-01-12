@@ -1,9 +1,10 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
-#include <array>      // std::array
-#include <cstdint>    // uint8_t, uint16_t
-#include <vector>     // std::vector
+#include <array>    // std::array
+#include <cstdint>  // uint8_t, uint16_t
+#include <map>      // std::map
+#include <vector>   // std::vector
 
 #include "errors.h"
 
@@ -22,8 +23,8 @@ namespace registers {
 enum Flags {
   negative = 0x01,
   equal = 0x02,
-  lower = 0x03,
-  greater = 0x04
+  lower = 0x04,
+  greater = 0x08
 }; // namespace flags
 
 template <unsigned size>
@@ -49,7 +50,7 @@ private:
 };
 
 extern Stack<0xff> stack;
-
+extern std::map<std::string, unsigned> jmp_tokens;
 extern std::array<u8, 0xffff> RAM;
 extern std::vector<u8> ROM;
 

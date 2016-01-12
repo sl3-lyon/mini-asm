@@ -5,12 +5,6 @@
 #include <functional> // std::function
 #include <map>        // std::map
 
-namespace Asm {
-namespace Compiler {
-
-extern std::map<u8, std::function<void(void)>> op; //!< @brief Mapping opcodes - operations
-
-} // namespace Asm::Compiler
-} // namespace Asm
+extern std::map<u8, std::function<void(void)>> op; //!< @brief Mapping opcode - operations
 
 #endif // __COMPILER_H__

@@ -107,7 +107,7 @@ inline void call(u8 value) {
   (void)value;
 }
 
-std::map<u8, std::function<void(void)>> Asm::Compiler::op = {
+std::map<u8, std::function<void(void)>> op = {
   { 0x00, []() -> void {} },
 
   // --[ MOV ]--

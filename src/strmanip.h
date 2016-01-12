@@ -5,11 +5,11 @@
 #include <string>  // std::string
 
 /**
- * @brief Turns a string into a lower string
- * @param str The string we work with
- * @returns str as lower string
- * @throw std::bad_alloc if std::string::op+= fails
- */
+  * @brief Turns a string into a lower string
+  * @param str The string we work with
+  * @returns str as lower string
+  * @throw std::bad_alloc if std::string::op+= fails
+  */
 inline std::string to_lower(std::string const& str) {
   std::string cpy;
   for (auto const c : str) {
@@ -17,12 +17,13 @@ inline std::string to_lower(std::string const& str) {
   }
   return cpy;
 }
+
 /**
- * @brief Turns a string into a lower string
- * @param str The string we work with
- * @returns str as lower string
- * @throw std::bad_alloc if std::string::op+= fails
- */
+  * @brief Turns a string into a upper string
+  * @param str The string we work with
+  * @returns str as upper string
+  * @throw std::bad_alloc if std::string::op+= fails
+  */
 inline std::string to_upper(std::string const& str) {
   std::string cpy;
   for (auto const c : str) {

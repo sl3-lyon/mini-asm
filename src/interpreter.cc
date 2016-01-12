@@ -10,11 +10,6 @@
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2);
 
-/**
- * @brief Interprets an instruction
- * @param inst The instruction
- * @throws std::runtime_error If the instruction is not correct
- */
 void Asm::Interpreter::intepret_instruction(std::string const& inst) {
   using namespace Asm::Syntax;
   auto instruction = inst.substr(0, inst.find(";"));
@@ -104,11 +99,6 @@ inline u8& ref_to(std::string const& param) {
 }
 
 // TODO - Refactoring
-
-namespace Asm {
-namespace Interpreter {
-namespace Instructions {
-
 void exec_mov(std::string const& param1, std::string const& param2) {
   if (is_register(param1)) {
     get_register(param1) = value_of(param2);
@@ -138,6 +128,7 @@ void exec_sub(std::string const& param1, std::string const& param2) {
 void exec_cmp(std::string const& param1, std::string const& param2) {
   auto val1 = value_of(param1);
   auto val2 = value_of(param2);
+  registers::P = 0;
   if (val1 == val2) {
     registers::P |= Flags::equal;
   } else if (val1 > val2) {
@@ -173,7 +164,7 @@ void exec_pop(std::string const& param1) {
 
 inline void jump_if(std::string const& param1, bool cond) {
   if (cond) {
-    registers::PC = value_of(param1);
+    registers::PC = jmp_tokens[param1];
   }
 }
 
@@ -212,14 +203,9 @@ void exec_shl(std::string const& param1, std::string const& param2) {
 void exec_shr(std::string const& param1, std::string const& param2) {
   ref_to(param1) >>= value_of(param2);
 }
-
-} // namespace Asm::Interpreter::Instructions
-} // namespace Asm::Interpreter
-} // namespace Asm
 // End TODO
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
-  using namespace Asm::Interpreter::Instructions;
   if (op == "mov") {
     exec_mov(param1, param2);
   } else if (op == "add") {
@@ -227,13 +213,13 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
   } else if (op == "sub") {
     exec_sub(param1, param2);
   } else if (op == "cmp") {
-    exec_sub(param1, param2);
+    exec_cmp(param1, param2);
   } else if (op == "or") {
-    exec_sub(param1, param2);
+    exec_or(param1, param2);
   } else if (op == "and") {
-    exec_sub(param1, param2);
+    exec_and(param1, param2);
   } else if (op == "xor") {
-    exec_sub(param1, param2);
+    exec_xor(param1, param2);
   } else if (op == "push") {
     exec_push(param1);
   } else if (op == "pop") {
@@ -256,5 +242,19 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
     exec_shl(param1, param2);
   } else if (op == "shr") {
     exec_shr(param1, param2);
+  } else if (op == "jmp") {
+    exec_jmp(param1);
+  } else if (op == "je") {
+    exec_je(param1);
+  } else if (op == "jne") {
+    exec_jne(param1);
+  } else if (op == "jl") {
+    exec_jl(param1);
+  } else if (op == "jle") {
+    exec_jle(param1);
+  } else if (op == "jg") {
+    exec_jg(param1);
+  } else if (op == "jge") {
+    exec_jge(param1);
   }
 }

@@ -1,6 +1,6 @@
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <fstream>  // std::ifstream
+#include <iostream> // std::cout
+#include <map>      // std::map
 
 #include "cpu.h"
 #include "infos.h"
@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
       std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
     }
   } catch (std::exception const& e) {
-      std::cout << std::string{"Error: "} + e.what();
-    }
+    std::cout << std::string{"Error: "} + e.what();
+  }
 }
 
 const std::vector<std::regex> command_regexes = {
@@ -98,6 +98,16 @@ void start_shell_mode() {
   }
 }
 
+std::string extract_jmp_token(std::string const& line) {
+  unsigned i{};
+  for (; i < line.size() && std::isspace(line[i]); i++);
+  std::string token;
+  for (; i < line.size() && !std::isspace(line[i]) && line[i] != ':'; i++) {
+    token += line[i];
+  }
+  return token;
+}
+
 void read_from_file(std::string const& filename) {
   std::ifstream file{filename};
   if (!file) {
@@ -106,10 +116,23 @@ void read_from_file(std::string const& filename) {
   std::string line;
   std::vector<std::string> code;
   // We need to use a vector because of (future) JMP instructions
+  const std::regex jmp_token_regex{"[ \t]*[_a-zA-Z]*[_a-zA-Z0-9]+[ \t]*:"};
+  unsigned i{};
   while (std::getline(file, line)) {
-    code.push_back(line);
+    if (std::regex_match(line, jmp_token_regex)) {
+      auto token = extract_jmp_token(line);
+      // If token already exists
+      if (std::find_if(jmp_tokens.begin(), jmp_tokens.end(), [=](auto const& tok) -> bool { return token == tok.first; }) != jmp_tokens.end()) {
+        throw std::runtime_error{"Multiple definitions of token " + token};
+      } else {
+        jmp_tokens.insert({token, i});
+      }
+      continue;
+    }
+    code.push_back(line.substr(0, line.find(';')));
+    i++;
   }
-  for (auto const& inst : code) {
-    interpret(to_lower(inst));
+  while (registers::PC < code.size()) {
+    interpret(to_lower(code[registers::PC++]));
   }
 }
