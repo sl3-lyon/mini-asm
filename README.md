@@ -16,7 +16,7 @@ Command-line interpreter
 ```asm
 Mini ASM version 0.1.0
 Created by Vincent P.
-Shell mode - Type  'exit' to stop
+Shell mode - Type 'exit' to stop
 > mov A, 42
 > print A
 42
