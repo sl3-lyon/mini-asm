@@ -90,7 +90,7 @@ void interpret(std::string const& line) {
 void start_shell_mode() {
   std::cout << "Mini ASM version " + App::version << "\n"
     << "Created by Vincent P." << "\n"
-    << "Shell mode - Type  'exit' to stop \n";
+    << "Shell mode - Type 'exit' to stop \n";
   std::string line;
   while (true) {
     try {
