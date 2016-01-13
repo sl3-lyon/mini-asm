@@ -36,8 +36,9 @@ int main(int argc, char **argv) {
 }
 
 const std::vector<std::regex> command_regexes = {
-  std::regex{"(p r|print register) (a|x|y|p|s|pc)"},
-  std::regex{"(p r|print registers)"}
+  std::regex{"print registers"},
+  std::regex{"print (a|x|y|p|s|pc)"},
+  std::regex{"print (\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)"}
 };
 
 bool is_command(std::string const& line) {
@@ -59,11 +60,11 @@ void print_registers() {
 }
 
 void interpret_command(std::string const& command) {
-  if (command == "p r" || command == "print registers") print_registers();
-  else if (std::regex_match(command, std::regex{"p r (a|x|y|p|s|pc)"})) {
-    std::cout << static_cast<unsigned>(get_register(command.substr(4))) << "\n";
-  } else if (std::regex_match(command, std::regex{"print register (a|x|y|p|s|pc)"})) {
-    std::cout << static_cast<unsigned>(get_register(command.substr(15))) << "\n";
+  if (command == "print registers") {
+    print_registers();
+  } else if (std::regex_match(command, std::regex{"print (a|x|y|p|s|pc)"})
+    || std::regex_match(command, std::regex{"print (\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)"})) {
+    std::cout << static_cast<unsigned>(value_of(command.substr(6))) << "\n";
   }
 }
 
@@ -110,7 +111,7 @@ std::string extract_jmp_token(std::string const& line) {
   for (; i < line.size() && !std::isspace(line[i]) && line[i] != ':'; i++) {
     token += line[i];
   }
-  return token;
+  return to_lower(token);
 }
 
 void read_from_file(std::string const& filename) {
