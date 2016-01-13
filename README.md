@@ -21,6 +21,5 @@ Shell mode - Type  'exit' to stop
 > print A
 42
 ```
-**Note** - ```p r A``` is the same thing as ```print register A```.
 ####Interpreter (coming soon)
 Reads an ASM file
