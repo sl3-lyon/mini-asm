@@ -94,14 +94,19 @@ inline u8 value_of(std::string const& value) {
 
 inline u8& ref_to(std::string const& param) {
   if (is_register(param)) return get_register(param);
-  if (is_address(param))  return RAM[value_of(param)];
+  if (is_address(param)) {
+    auto val = to_lower(param);
+    if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return RAM[static_cast<u8>(std::stoi(val.substr(1)))]; // Decimal
+    if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return RAM[from_hex(val.substr(3))]; // Hex
+    if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return RAM[from_bin(val.substr(3))]; // Bin
+  }
   throw std::runtime_error{"Invalid value " + param};
 }
 
 // TODO - Refactoring
 void exec_mov(std::string const& param1, std::string const& param2) {
   if (is_register(param1)) {
-    get_register(param1) = value_of(param2);
+    ref_to(param1) = value_of(param2);
   } else if (is_address(to_lower(param1))) {
     u8 idx = 0;
     if (std::regex_match(to_lower(param1), std::regex{"\\*[0-9]+"})) {
@@ -155,11 +160,7 @@ void exec_push(std::string const& param1) {
 }
 
 void exec_pop(std::string const& param1) {
-  if (is_register(param1)) {
-    get_register(param1) = stack.pop();
-  } else if (is_address(param1)) {
-    RAM[value_of(param1)] = stack.pop();
-  }
+   ref_to(param1) = stack.pop();
 }
 
 inline void jump_if(std::string const& param1, bool cond) {
@@ -257,4 +258,13 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
   } else if (op == "jge") {
     exec_jge(param1);
   }
+  /*
+    regex_jmp,
+  regex_je,
+  regex_jne,
+  regex_jl,
+  regex_jle,
+  regex_jg,
+  regex_jge,
+  */
 }

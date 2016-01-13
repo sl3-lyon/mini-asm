@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
   } catch (std::exception const& e) {
     std::cout << std::string{"Error: "} + e.what();
   }
+  std::cin.get();
 }
 
 const std::vector<std::regex> command_regexes = {
@@ -91,10 +92,14 @@ void start_shell_mode() {
     << "Shell mode - Type  'exit' to stop \n";
   std::string line;
   while (true) {
-    std::cout << "> ";
-    std::getline(std::cin, line);
-    if (line == "exit") break;
-    interpret(to_lower(line));
+    try {
+      std::cout << "> ";
+      std::getline(std::cin, line);
+      if (line == "exit") break;
+      interpret(to_lower(line));
+    } catch (std::exception const& e) {
+      std::cout << std::string{"Error: "} + e.what();
+    }
   }
 }
 
