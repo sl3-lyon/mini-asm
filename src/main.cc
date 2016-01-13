@@ -66,7 +66,7 @@ void interpret_command(std::string const& command) {
     || std::regex_match(command, std::regex{"print (\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+)"})) {
     std::cout << static_cast<unsigned>(value_of(command.substr(6))) << "\n";
   }
-}
+}value_of
 
 inline bool is_space(std::string const& str) noexcept {
   for (auto c : str) {

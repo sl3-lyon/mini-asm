@@ -71,7 +71,15 @@ inline u8 from_bin(std::string const& bin) {
   return static_cast<u8>(std::bitset<8>(bin).to_ulong());
 }
 
-inline u8 value_of(std::string const& value) {
+u8 index_from(std::string const& value) {
+  auto val = to_lower(value);
+  if (std::regex_match(val, std::regex{ "\\*[0-9]+" })) return static_cast<u8>(std::stoi(val.substr(1))); // Decimal
+  if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return from_hex(val.substr(3)); // Hex
+  if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return from_bin(val.substr(3)); // Bin
+  throw std::runtime_error{"Invalid token '" + val + "'"};
+}
+
+u8 value_of(std::string const& value) {
   auto val = to_lower(value);
   // Register
   if (is_register(val)) {
@@ -79,9 +87,7 @@ inline u8 value_of(std::string const& value) {
   }
   // Address
   if (is_address(val)) {
-    if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return RAM[static_cast<u8>(std::stoi(val.substr(1)))]; // Decimal
-    if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return RAM[from_hex(val.substr(3))]; // Hex
-    if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return RAM[from_bin(val.substr(3))]; // Bin
+    return RAM[index_from(val)];
   }
   // Simple value
   else {
@@ -93,33 +99,16 @@ inline u8 value_of(std::string const& value) {
 }
 
 inline u8& ref_to(std::string const& param) {
-  if (is_register(param)) return get_register(param);
-  if (is_address(param)) {
-    auto val = to_lower(param);
-    if (std::regex_match(val, std::regex{"\\*[0-9]+"})) return RAM[static_cast<u8>(std::stoi(val.substr(1)))]; // Decimal
-    if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return RAM[from_hex(val.substr(3))]; // Hex
-    if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return RAM[from_bin(val.substr(3))]; // Bin
-  }
+  auto val = to_lower(param);
+  if (is_register(val)) return get_register(val);
+  if (is_address(val)) return RAM[index_from(val)];
   throw std::runtime_error{"Invalid value " + param};
 }
 
-// TODO - Refactoring
 void exec_mov(std::string const& param1, std::string const& param2) {
-  if (is_register(param1)) {
-    ref_to(param1) = value_of(param2);
-  } else if (is_address(to_lower(param1))) {
-    u8 idx = 0;
-    if (std::regex_match(to_lower(param1), std::regex{"\\*[0-9]+"})) {
-      idx = static_cast<u8>(std::stoi(param1.substr(1))); // Decimal
-    } else if (std::regex_match(to_lower(param1), std::regex{"\\*0x[0-9a-f]+"})) {
-      idx = from_hex(param1.substr(3)); // Hex
-    } else if (std::regex_match(to_lower(param1), std::regex{"\\*0b[0-1]+"})) {
-      idx = from_bin(param1.substr(3)); // Bin
-    }
-    RAM[idx] = value_of(param2);
-  } else {
-    throw std::runtime_error{"Cannot execute MOV\n"};
-  }
+  if (is_register(param1)) ref_to(param1) = value_of(param2);
+  else if (is_address(to_lower(param1))) RAM[index_from(to_lower(param1))] = value_of(param2);
+  else throw std::runtime_error{"Cannot execute MOV\n"};
 }
 
 void exec_add(std::string const& param1, std::string const& param2) {
@@ -165,7 +154,15 @@ void exec_pop(std::string const& param1) {
 
 inline void jump_if(std::string const& param1, bool cond) {
   if (cond) {
-    registers::PC = jmp_tokens[param1];
+    auto val = to_lower(param1);
+    if (std::regex_match(val, std::regex{"(0b[0-1]+|0x[0-9a-f]+|[0-9]+)"})) {
+      u8 idx{};
+      if (std::regex_match(val, std::regex{"[0-9]+"})) idx = static_cast<u8>(std::stoi(val)); // Decimal
+      if (std::regex_match(val, std::regex{"0x[0-9a-f]+"})) idx = from_hex(val.substr(2)); // Hex
+      if (std::regex_match(val, std::regex{"0b[0-1]+"})) idx = from_bin(val.substr(2)); // Bin
+      registers::PC = idx;
+    }
+    else registers::PC = jmp_tokens[val];
   }
 }
 
@@ -204,7 +201,6 @@ void exec_shl(std::string const& param1, std::string const& param2) {
 void exec_shr(std::string const& param1, std::string const& param2) {
   ref_to(param1) >>= value_of(param2);
 }
-// End TODO
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
   if (op == "mov") {
