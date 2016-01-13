@@ -258,13 +258,4 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
   } else if (op == "jge") {
     exec_jge(param1);
   }
-  /*
-    regex_jmp,
-  regex_je,
-  regex_jne,
-  regex_jl,
-  regex_jle,
-  regex_jg,
-  regex_jge,
-  */
 }
