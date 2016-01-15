@@ -35,7 +35,6 @@ void Asm::Interpreter::intepret_instruction(std::string const& inst) {
  * @throw /
  */
 inline bool is_register(std::string const& name) noexcept {
-  assert(is_lower(name) && "String must be a lower string");
   return name == "a" || name == "x" || name == "y"
     || name == "p" || name == "pc" || name == "s";
 }
