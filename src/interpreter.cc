@@ -10,6 +10,11 @@
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2);
 
+/*
+ * @brief Interprets an ASM instruction
+ * @param inst Full ASM instruction (ex: "mov A, 42)
+ * @throw std::runtime_error If inst is not a correct ASM instruction
+ */
 void Asm::Interpreter::intepret_instruction(std::string const& inst) {
   using namespace Asm::Syntax;
   auto instruction = inst.substr(0, inst.find(";"));
@@ -71,24 +76,18 @@ inline u8 from_bin(std::string const& bin) {
   return static_cast<u8>(std::bitset<8>(bin).to_ulong());
 }
 
-u8 index_from(std::string const& value) {
-  auto val = to_lower(value);
+u8 index_from(std::string const& val) {
   if (std::regex_match(val, std::regex{ "\\*[0-9]+" })) return static_cast<u8>(std::stoi(val.substr(1))); // Decimal
   if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return from_hex(val.substr(3)); // Hex
   if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return from_bin(val.substr(3)); // Bin
   throw std::runtime_error{"Invalid token '" + val + "'"};
 }
 
-u8 value_of(std::string const& value) {
-  auto val = to_lower(value);
+u8 value_of(std::string const& val) {
   // Register
-  if (is_register(val)) {
-    return get_register(val);
-  }
+  if (is_register(val)) return get_register(val);
   // Address
-  if (is_address(val)) {
-    return RAM[index_from(val)];
-  }
+  if (is_address(val)) return RAM[index_from(val)];
   // Simple value
   else {
     if (std::regex_match(val, std::regex{"[0-9]+"})) return static_cast<u8>(std::stoi(val)); // Decimal
@@ -99,15 +98,14 @@ u8 value_of(std::string const& value) {
 }
 
 inline u8& ref_to(std::string const& param) {
-  auto val = to_lower(param);
-  if (is_register(val)) return get_register(val);
-  if (is_address(val)) return RAM[index_from(val)];
+  if (is_register(param)) return get_register(param);
+  if (is_address(param)) return RAM[index_from(param)];
   throw std::runtime_error{"Invalid value " + param};
 }
 
 void exec_mov(std::string const& param1, std::string const& param2) {
   if (is_register(param1)) ref_to(param1) = value_of(param2);
-  else if (is_address(to_lower(param1))) RAM[index_from(to_lower(param1))] = value_of(param2);
+  else if (is_address(param1)) RAM[index_from(param1)] = value_of(param2);
   else throw std::runtime_error{"Cannot execute MOV\n"};
 }
 
@@ -123,13 +121,9 @@ void exec_cmp(std::string const& param1, std::string const& param2) {
   auto val1 = value_of(param1);
   auto val2 = value_of(param2);
   registers::P = 0;
-  if (val1 == val2) {
-    registers::P |= Flags::equal;
-  } else if (val1 > val2) {
-    registers::P |= Flags::greater;
-  } else if (val1 < val2) {
-    registers::P |= Flags::lower;
-  }
+  if (val1 == val2) registers::P |= Flags::equal;
+  else if (val1 > val2) registers::P |= Flags::greater;
+  else if (val1 < val2) registers::P |= Flags::lower;
 }
 
 void exec_or(std::string const& param1, std::string const& param2) {
@@ -154,15 +148,14 @@ void exec_pop(std::string const& param1) {
 
 inline void jump_if(std::string const& param1, bool cond) {
   if (cond) {
-    auto val = to_lower(param1);
-    if (std::regex_match(val, std::regex{"(0b[0-1]+|0x[0-9a-f]+|[0-9]+)"})) {
+    if (std::regex_match(param1, std::regex{"(0b[0-1]+|0x[0-9a-f]+|[0-9]+)"})) {
       u8 idx{};
-      if (std::regex_match(val, std::regex{"[0-9]+"})) idx = static_cast<u8>(std::stoi(val)); // Decimal
-      if (std::regex_match(val, std::regex{"0x[0-9a-f]+"})) idx = from_hex(val.substr(2)); // Hex
-      if (std::regex_match(val, std::regex{"0b[0-1]+"})) idx = from_bin(val.substr(2)); // Bin
+      if (std::regex_match(param1, std::regex{"[0-9]+"})) idx = static_cast<u8>(std::stoi(param1)); // Decimal
+      if (std::regex_match(param1, std::regex{"0x[0-9a-f]+"})) idx = from_hex(param1.substr(2)); // Hex
+      if (std::regex_match(param1, std::regex{"0b[0-1]+"})) idx = from_bin(param1.substr(2)); // Bin
       registers::PC = idx;
     }
-    else registers::PC = jmp_tokens[val];
+    else registers::PC = jmp_tokens[param1];
   }
 }
 

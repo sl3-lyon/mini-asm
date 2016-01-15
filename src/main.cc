@@ -21,13 +21,17 @@ void read_from_file(std::string const& filename);
 
 int main(int argc, char **argv) {
   try {
-    if (argc == 1) {
+    switch (argc) {
+    case 1:
       start_shell_mode();
-    } else if (argc == 2) {
+      break;
+    case 2:
       read_from_file(std::string{argv[1]});
       start_shell_mode();
-    } else {
+      break;
+    default:
       std::cout << "Wrong number of arguments: expected file name or no argument for shell mode";
+      break;
     }
   } catch (std::exception const& e) {
     std::cout << std::string{"Error: "} + e.what();
@@ -70,7 +74,9 @@ void interpret_command(std::string const& command) {
 
 inline bool is_space(std::string const& str) noexcept {
   for (auto c : str) {
-    if (!isspace(c)) return false;
+    if (!isspace(c)) {
+      return false;
+    }
   }
   return true;
 }
@@ -88,9 +94,9 @@ void interpret(std::string const& line) {
 }
 
 void start_shell_mode() {
-  std::cout << "Mini ASM version " + App::version << "\n"
-    << "Created by Vincent P." << "\n"
-    << "Shell mode - Type 'exit' to stop \n";
+  std::cout << "Mini ASM version " + App::version 
+    << "\nCreated by Vincent P.\n"
+    << "Shell mode - Type 'exit' to stop\n";
   std::string line;
   while (true) {
     try {
@@ -121,24 +127,25 @@ void read_from_file(std::string const& filename) {
   }
   std::string line;
   std::vector<std::string> code;
-  // We need to use a vector because of (future) JMP instructions
+  // We need to use a vector because of JMP instructions
   const std::regex jmp_token_regex{"[ \t]*[_a-zA-Z]*[_a-zA-Z0-9]+[ \t]*:"};
   unsigned i{};
   while (std::getline(file, line)) {
     if (std::regex_match(line, jmp_token_regex)) {
       auto token = extract_jmp_token(line);
       // If token already exists
-      if (std::find_if(jmp_tokens.begin(), jmp_tokens.end(), [=](auto const& tok) -> bool { return token == tok.first; }) != jmp_tokens.end()) {
+      auto fun =  [=](auto const& tok) -> bool { return token == tok.first; };
+      if (std::find_if(jmp_tokens.begin(), jmp_tokens.end(), fun) != jmp_tokens.end()) {
         throw std::runtime_error{"Multiple definitions of token " + token};
       } else {
         jmp_tokens.insert({token, i});
       }
       continue;
     }
-    code.push_back(line.substr(0, line.find(';')));
+    code.push_back(to_lower(line.substr(0, line.find(';'))));
     i++;
   }
   while (registers::PC < code.size()) {
-    interpret(to_lower(code[registers::PC++]));
+    interpret(code[registers::PC++]);
   }
 }
