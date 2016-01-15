@@ -4,6 +4,7 @@
 #include "syntax.h"   // is_inst
 
 #include <bitset>     // std::bitset
+#include <cassert>    // assert
 #include <regex>      // std::regex, std::regex_match
 #include <sstream>    // std::stringstream
 #include <stdexcept>  // std::runtime_error
@@ -17,7 +18,7 @@ void exec(std::string const& op, std::string const& param1, std::string const& p
  */
 void Asm::Interpreter::intepret_instruction(std::string const& inst) {
   using namespace Asm::Syntax;
-  auto instruction = inst.substr(0, inst.find(";"));
+  auto instruction = to_lower(inst.substr(0, inst.find(";")));
   if (!is_inst(instruction)) {
     throw std::runtime_error{"Invalid instruction '" + instruction + "'\n"};
   }
@@ -34,6 +35,7 @@ void Asm::Interpreter::intepret_instruction(std::string const& inst) {
  * @throw /
  */
 inline bool is_register(std::string const& name) noexcept {
+  assert(is_lower(name) && "String must be a lower string");
   return name == "a" || name == "x" || name == "y"
     || name == "p" || name == "pc" || name == "s";
 }
@@ -48,6 +50,15 @@ inline bool is_address(std::string const& val) noexcept {
   return std::regex_match(val, std::regex{"\\*[0-9]+|\\*0x[0-9a-f]+|\\*0b[0-1]+"});
 }
 
+inline bool is_lower(std::string const& str) noexcept {
+  for (auto const& c : str) {
+    if (c >= 'a' && c <= 'Z' && !islower(c)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * @brief Returns a reference to one of the registers
  * @param name Name of a register
@@ -55,6 +66,7 @@ inline bool is_address(std::string const& val) noexcept {
  * @throw std::runtime_error if name is not correct
  */
 u8& get_register(std::string const& name) {
+  assert(is_lower(name) && "String must be a lower string");
   if (name == "a") return registers::A;
   if (name == "x") return registers::X;
   if (name == "y") return registers::Y;
@@ -77,6 +89,7 @@ inline u8 from_bin(std::string const& bin) {
 }
 
 u8 index_from(std::string const& val) {
+  assert(is_lower(val) && "String must be a lower string");
   if (std::regex_match(val, std::regex{ "\\*[0-9]+" })) return static_cast<u8>(std::stoi(val.substr(1))); // Decimal
   if (std::regex_match(val, std::regex{"\\*0x[0-9a-f]+"})) return from_hex(val.substr(3)); // Hex
   if (std::regex_match(val, std::regex{"\\*0b[0-1]+"})) return from_bin(val.substr(3)); // Bin
@@ -84,6 +97,7 @@ u8 index_from(std::string const& val) {
 }
 
 u8 value_of(std::string const& val) {
+  assert(is_lower(val) && "String must be a lower string");
   // Register
   if (is_register(val)) return get_register(val);
   // Address
@@ -98,26 +112,35 @@ u8 value_of(std::string const& val) {
 }
 
 inline u8& ref_to(std::string const& param) {
+  assert(is_lower(param) && "String must be a lower string");
   if (is_register(param)) return get_register(param);
   if (is_address(param)) return RAM[index_from(param)];
   throw std::runtime_error{"Invalid value " + param};
 }
 
 void exec_mov(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   if (is_register(param1)) ref_to(param1) = value_of(param2);
   else if (is_address(param1)) RAM[index_from(param1)] = value_of(param2);
   else throw std::runtime_error{"Cannot execute MOV\n"};
 }
 
 void exec_add(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) += value_of(param2);
 }
 
 void exec_sub(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) -= value_of(param2);
 }
 
 void exec_cmp(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   auto val1 = value_of(param1);
   auto val2 = value_of(param2);
   registers::P = 0;
@@ -127,26 +150,35 @@ void exec_cmp(std::string const& param1, std::string const& param2) {
 }
 
 void exec_or(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) |= value_of(param2);
 }
 
 void exec_and(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) &= value_of(param2);
 }
 
 void exec_xor(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) ^= value_of(param2);
 }
 
 void exec_push(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   stack.push(value_of(param1));
 }
 
 void exec_pop(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
    ref_to(param1) = stack.pop();
 }
 
 inline void jump_if(std::string const& param1, bool cond) {
+  assert(is_lower(param1) && "String must be a lower string");
   if (cond) {
     if (std::regex_match(param1, std::regex{"(0b[0-1]+|0x[0-9a-f]+|[0-9]+)"})) {
       u8 idx{};
@@ -160,42 +192,56 @@ inline void jump_if(std::string const& param1, bool cond) {
 }
 
 void exec_jmp(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, true);
 }
 
 void exec_je(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, (registers::P & Flags::equal) != 0);
 }
 
 void exec_jne(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, !(registers::P & Flags::equal));
 }
 
 void exec_jl(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, (registers::P & Flags::lower) != 0);
 }
 
 void exec_jle(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, registers::P & Flags::lower || registers::P & Flags::equal);
 }
 
 void exec_jg(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, (registers::P & Flags::greater) != 0);
 }
 
 void exec_jge(std::string const& param1) {
+  assert(is_lower(param1) && "String must be a lower string");
   jump_if(param1, registers::P & Flags::greater || registers::P & Flags::equal);
 }
 
 void exec_shl(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) <<= value_of(param2);
 }
 
 void exec_shr(std::string const& param1, std::string const& param2) {
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   ref_to(param1) >>= value_of(param2);
 }
 
 void exec(std::string const& op, std::string const& param1, std::string const& param2) {
+  assert(is_lower(op) && "String must be a lower string");
+  assert(is_lower(param1) && "String must be a lower string");
+  assert(is_lower(param2) && "String must be a lower string");
   if (op == "mov") {
     exec_mov(param1, param2);
   } else if (op == "add") {
