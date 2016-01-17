@@ -20,6 +20,13 @@ Shell mode - Type 'exit' to stop
 > mov A, 42
 > print A
 42
+> mov X, 10
+> sub A, X
+> print A
+32
+> add A, 0xf
+> print A
+47
 ```
 ####Interpreter (coming soon)
 Reads an ASM file
