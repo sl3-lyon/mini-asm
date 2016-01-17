@@ -1,24 +1,7 @@
 #include "syntax.h"
-
+#include "strmanip.h"
 #include <cassert> // assert
 #include <cctype>  // std::isspace, std::tolower
-
-//! @brief anonymous namespace
-namespace {
-  /**
-   * @brief Turns a string into a lower string
-   * @param str The string we work with
-   * @returns str as lower string
-   * @throw std::bad_alloc if std::string::op+= fails
-   */
-  std::string to_lower(std::string const& str) {
-    std::string cpy;
-    for (auto const c : str) {
-      cpy += std::tolower(c);
-    }
-    return cpy;
-  }
-}
 
 /**
  * @brief Checks if line is a correct ASM instruction
