@@ -1,7 +1,7 @@
 #include "cpu.h"
 
 Stack<0xff> stack{}; //!< @brief Stack
-std::map<std::string, unsigned> jmp_tokens{};
+std::map<std::string, unsigned> jmp_tokens{}; //!< @brief Mapping JMP token <-> address
 
 /**
  * @namespace registers
